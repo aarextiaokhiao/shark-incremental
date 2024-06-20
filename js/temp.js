@@ -77,6 +77,6 @@ function updateTemp() {
 }
 
 function updateOptions() {
-    options.notation = ['sc','st','mixed_sc','log'][player.radios["notation"]]
+    options.notation = ['sc','mixed_sc'][player.radios["notation"]]
     options.max_range = [3,6,9,12,15][player.radios["comma-format"]]
 }

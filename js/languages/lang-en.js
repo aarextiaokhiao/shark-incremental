@@ -688,8 +688,7 @@ LANGUAGES.EN = {
         },
 
         'radio-desc' : {
-            'notation': ['Formatting Notation',['Scientific','Standard','Mixed Scientific','Logarithm']],
-            'comma-format': ['Maximum OoMs of Number Commas',['3','6','9','12','15']],
+            'notation': ['Formatting Notation',['Scientific','Default']],
             'autosave': ['Autosaving',['Disabled','Enabled']],
             'autosave-time': ['Autosave Interval',['15s','30s','60s','120s']],
             'offline': ['Offline Progress',['Disabled','Enabled']],
@@ -702,7 +701,7 @@ LANGUAGES.EN = {
 
         'prompt-placeholder': "Type text here...",
 
-        'option-buttons-text': ["Save","Export to clipboard","Export as file","Import from prompt","Import from file","WIPE!!!",'Join the community (Discord)','Support the creator (Boosty)'],
+        'option-buttons-text': ["Save","Export to clipboard","Export as file","Import from prompt","Import from file","WIPE!!!",'Join the community (Discord)'],
 
         'confirm-prestige': "Prestige",
         'confirm-core': "Enter the Core",

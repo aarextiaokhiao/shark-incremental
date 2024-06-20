@@ -5,8 +5,7 @@ function loadGame(start=true, gotNaN=false) {
     reloadTemp()
 
     if (start) {
-        setupLanguage()
-
+        lang_data = LANGUAGES.EN.text
         setupOptions()
 
         createCanvasGraph("offline",{axis_name: ["Time","Fish"], color: "orange"})
@@ -40,11 +39,7 @@ function getLangRadio(id) {
 
 function setupOptions() {
     createRadio(...getLangRadio('notation'), {
-        start_position: 2,
-    })
-    createRadio(...getLangRadio('comma-format'), {
         start_position: 1,
-        width: 40,
     })
 
     createRadio(...getLangRadio('autosave'), {
