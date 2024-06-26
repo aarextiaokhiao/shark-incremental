@@ -713,7 +713,7 @@ LANGUAGES.EN = {
             'notation': ['Formatting Notation',['Scientific','Default']],
             'autosave': ['Autosaving',['Disabled','15s','30s','60s','120s']],
             'offline': ['Offline Progress',['Disabled','Enabled']],
-            'max-research-amt': ['Maximum research upgrades per page',['∞','15','20','25','30']],
+            'max-research-amt': ['Maximum research upgrades per page',['15','20','25']],
             'visible-research': [`Purchased research's visibility`,["Shown","Hidden"]],
             'notify': ['Tab Notification',['Disabled','Enabled']],
         },
