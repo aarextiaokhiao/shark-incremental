@@ -21,7 +21,6 @@ const RESEARCH = {
         noBuyMax: true,
         unl: ()=>true,
         require: [
-            // l=>Decimal.pow(100,l.pow(2.5)).mul(1e13)
             ['prestige',false,l=>[1e13,1e15,1e24,1e30,1e48][l.round().toNumber()]??EINF,x=>0],
         ],
         onBuy() {
@@ -337,7 +336,7 @@ const RESEARCH = {
 }
 
 const RESEARCH_KEYS = Object.keys(RESEARCH)
-const MAX_RESEARCH = [null,15,20,25,30]
+const MAX_RESEARCH = [15,20,25]
 
 var research_page = 1
 
@@ -413,16 +412,14 @@ function updateResearchHTML() {
     var visible_research = hidden ? RESEARCH_KEYS.filter(x => !isResearchMaxed(x)) : RESEARCH_KEYS
 
     var m = MAX_RESEARCH[player.radios['max-research-amt']]
-    var unl = player.radios['max-research-amt'] != 0 && visible_research.length > m
+    var unl = visible_research.length > m
     el("research-page-div").style.display = el_display(unl)
     if (unl) {
         var c = Math.max(1,Math.ceil(visible_research.length/m))
 
         el("research-total-pages").innerHTML = lang_text('research-pages',c)
 
-        if (research_page > c) {
-            el("research-page").value = research_page = c
-        }
+        if (research_page > c) el("research-page").value = research_page = c
 
         visible_research = [...visible_research].splice(m*(research_page-1),m)
     }

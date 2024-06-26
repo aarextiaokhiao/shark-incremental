@@ -1,10 +1,6 @@
 // This is main language file! It's English!
 
 LANGUAGES.EN = {
-    name: "English",
-    inter_name: "English",
-    icon: "lang-en",
-
     text: {
         // Currencies
 
@@ -83,7 +79,6 @@ LANGUAGES.EN = {
         'option-title-1': "Main Options",
         'option-title-2': "Notations",
         'option-title-3': "Confirmations",
-        'option-title-4': "Languages",
 
         'offline-speed': "Speed up Offline time",
         'offline-done': "Done",
@@ -634,7 +629,6 @@ LANGUAGES.EN = {
         'shark-bonus-fish': x => `+${x.format(0)} ${toTextStyle('Fish','fish')}'s base`,
         'shark-bonus-prestige': x => `${formatMult(x)} ${toTextStyle('Prestige','prestige')} shard`,
         'shark-bonus-core': x => `${formatMult(x)} ${toTextStyle('Magmatic','core')} fragments`,
-        // 'shark-bonus-rad': x => `${formatMult(x)} ${toTextStyle('Radiation ' + icon("radioactive"),'core')}`,
 
         'shark-overpopulation': (x,y) => `Due to ${toTextStyle('Shark','shark')} overpopulation at <h4>${toTextStyle(format(y),'fish')}</h4>, ${toTextStyle('Fish','fish')} eaten is reduced by <h4>${format(x,3)}√</h4>.`,
 
@@ -689,8 +683,7 @@ LANGUAGES.EN = {
 
         'radio-desc' : {
             'notation': ['Formatting Notation',['Scientific','Default']],
-            'autosave': ['Autosaving',['Disabled','Enabled']],
-            'autosave-time': ['Autosave Interval',['15s','30s','60s','120s']],
+            'autosave': ['Autosaving',['Disabled','15s','30s','60s','120s']],
             'offline': ['Offline Progress',['Disabled','Enabled']],
             'max-research-amt': ['Maximum research upgrades per page',['∞','15','20','25','30']],
             'visible-research': [`Purchased research's visibility`,["Shown","Hidden"]],

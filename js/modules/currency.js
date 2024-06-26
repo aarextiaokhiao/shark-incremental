@@ -8,7 +8,6 @@ const CURRENCIES = {
     
         get gain() {
             let x = getSharkBonus("fish").mul(sharkUpgEffect('s1')).mul(sharkUpgEffect('p1')).mul(sharkUpgEffect('p2'))
-
             .mul(tmp.explore_eff[0]).mul(tmp.core_bonus)
 
             x = x.pow(sharkUpgEffect('s4')).pow(tmp.explore_eff[2]).pow(coreReactorEffect(0)).pow(getSharkRankBonus('fish')).pow(simpleETEffect(12))
@@ -22,9 +21,7 @@ const CURRENCIES = {
             if (inExploration(4)) x = expPow(x,0.75)
 
             var s = E('ee40'), pre_s = x
-
-            s = s.pow(getSharkRankBonus('so'))
-            
+            s = s.pow(getSharkRankBonus('so'))            
             tmp.shark_op_start = s
 
             if (x.gte(s)) {
@@ -46,7 +43,6 @@ const CURRENCIES = {
     
         get gain() {
             let x = player.total_fish.div(1e36)
-
             if (x.lt(1)) return E(0)
 
             var exp = 0.5
@@ -54,15 +50,13 @@ const CURRENCIES = {
             if (hasEvolutionGoal(5)) exp += 0.0125
 
             x = expPow(x,exp).pow(coreReactorEffect(1)).mul(getSharkBonus("prestige")).mul(tmp.explore_eff[1])
-
             x = x.pow(tmp.explore_eff[3]).pow(simpleETEffect(13)).pow(getSharkRankBonus('prestige')).pow(forgeUpgradeEffect('shard'))
-
             if (hasDepthMilestone(0,0)) x = x.pow(1.05)
+
             if (inExploration(1)) x = x.root(2)
+            if (tmp.cr_active) x = x.root(3)
 
-            if (tmp.cr_active) x = x.root(3);
-
-            x = expPow(x,forgeUpgradeEffect('refined_shard'))
+            x = expPow(x, forgeUpgradeEffect('refined_shard'))
     
             return x.floor()
         },

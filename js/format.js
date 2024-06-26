@@ -7,7 +7,6 @@ const SUPERSCRIPT_NUMBERS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 const FORMATS = {
 	sc(ex, acc) {
 		if (ex.lt(1e6)) return formatShort(ex, acc)
-		else if (ex.gte("eeee10")) return formatTetrate(ex)
 
 		var e = ex.log10().floor(), a = E(4).sub(e.log10().floor())
 		return (a.lt(0)?'':ex.div(Decimal.pow10(e)).toFixed(a))+'e'+format(e, 0)

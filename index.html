@@ -137,21 +137,7 @@
                 </div>
             </div>
         </div><div id="core-reactor-tab">
-            <div id="core-reactor-table">
-                <button class="core-reactor-button">
-                    <div class="core-reactor-symbol">Fe</div>
-                    <div class="core-reactor-desc">This is Iron.</div>
-                </button><button class="core-reactor-button">
-                    <div class="core-reactor-symbol">Ni</div>
-                    <div class="core-reactor-desc">This is Nickel.</div>
-                </button><button class="core-reactor-button">
-                    <div class="core-reactor-symbol">O</div>
-                    <div class="core-reactor-desc">This is Oxygen.</div>
-                </button><button class="core-reactor-button">
-                    <div class="core-reactor-symbol">Ne</div>
-                    <div class="core-reactor-desc">This is Neon.</div>
-                </button>
-            </div>
+            <div id="core-reactor-table"></div>
             <p id="core-reactor-bonus"></p>
         </div><div id="core-radiation-tab">
             <details id="radioactive-summary"></details>
@@ -160,9 +146,9 @@
                     <td style="width: 50%;">
                         <p id="radioactive-div"></p>
                         <div class="table-center">
-                            <button class="huge-btn" id="start-cr-experiment" onclick="CORE_RAD.experiment()">Start the experiment.</button>
-                            <button class="huge-btn" id="upgrade-cr-btn" onclick="CORE_RAD.purchaseGeneration()">Upgrade the radiation generation.</button>
-                            <button class="huge-btn" id="reset-cr-btn" onclick="CORE_RAD.purchaseBoost()" style="font-size: 12px;">Reset the radiation, but increase its limit by <b>???</b>, and sometimes add a new boost or upgrade the boosts.</button>
+                            <button class="huge-btn" id="start-cr-experiment" onclick="CORE_RAD.experiment()"></button>
+                            <button class="huge-btn" id="upgrade-cr-btn" onclick="CORE_RAD.purchaseGeneration()"></button>
+                            <button class="huge-btn" id="reset-cr-btn" onclick="CORE_RAD.purchaseBoost()" style="font-size: 12px;"></button>
                         </div>
                         <p id="core-temp-div"></p>
                     </td><td style="width: 50%;">
@@ -177,7 +163,8 @@
                     <td style="width: 50%;">
                         <div class="table-center">
                             <button id="ca-building-limit" class="huge-btn" onclick="purchaseCAMaxBuildings()"></button>
-                            <button class="huge-btn" id="core-assembler-erase" onclick="chooseCABuilding(-1)"></button>
+                            <button class="huge-btn" id="core-assembler-erase" onclick="chooseCABuilding(-1)"></button><br>
+                            <button id="core-assembler-undo" onclick="undoCA()"></button>
                         </div>
                         <div id="core-assembler-grid"></div>
                         <div id="core-assembler-choose-div" class="table-center"></div>
@@ -267,7 +254,6 @@
                     </div>
                     <div class="item-left">
                         <div id="radio-autosave" class="input-radio"></div>
-                        <br><div id="radio-autosave-time" class="input-radio"></div>
                         <br><div id="radio-offline" class="input-radio"></div>
                         <br><div id="radio-notify" class="input-radio"></div>
                     </div>

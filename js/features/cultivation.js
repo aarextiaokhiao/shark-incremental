@@ -2,7 +2,14 @@ const ORES = {
     'stone': {
         color: '#888c8d',
         dense: 1,
-        get mult() { return Decimal.mul(tmp.mining_tier_bonus[1],sharkUpgEffect('m3')).mul(getCRBoost(8)).mul(sharkUpgEffect('m5')).pow(forgeUpgradeEffect('drill')) },
+        get mult() {
+			let r = tmp.mining_tier_bonus[1]
+			r = r.mul(sharkUpgEffect('m3'))
+			r = r.mul(getCRBoost(8))
+			r = r.mul(sharkUpgEffect('m5'))
+
+			return r.pow(forgeUpgradeEffect('drill'))
+		},
     },
     'coal': {
         color: '#343735',
@@ -47,11 +54,11 @@ const ORES = {
         luck_penalty: 0.1,
     },
     'radium': {
-        color: `radial-gradient(circle, rgb(194,238,174) 0%, rgb(84,255,57) 100%);`,
+        color: `radial-gradient(circle, rgb(194,238,174) 0%, rgb(84,255,57) 100%)`,
         textColor: 'rgb(84,255,57)',
     },
     'uranium': {
-        color: `radial-gradient(circle, rgb(151,175,140) 0%, rgb(97,190,82) 100%);`,
+        color: `radial-gradient(circle, rgb(151,175,140) 0%, rgb(97,190,82) 100%)`,
         textColor: 'rgb(97,190,82)',
     },
     'berkelium': {
@@ -86,12 +93,9 @@ const MINING_TIER = {
     },
 
     get bonus() {
-
         var t = player.humanoid.mining_tier
-
-         var res_m4 = researchEffect('m4'), t_m4 = t.mul(res_m4)
-        
-        var x = [Decimal.pow(4,t.scale(20,2,'P')),Decimal.pow(5,t_m4)]
+        var res_m4 = researchEffect('m4'), t_m4 = t.mul(res_m4)
+        var x = [E(4).pow(t.scale(20,2,'P')),Decimal.pow(5,t_m4)]
 
         if (t.gte(4)) x.push(Decimal.pow(3,t_m4.sub(3)));
         if (t.gte(7)) x.push(Decimal.pow(4,t_m4.sub(6)));
@@ -118,17 +122,8 @@ const MINING_TIER = {
     base_milestone: [0,3,6,9,16,20,24,30],
     gen_milestone: [8,11,18,23,27,32],
 
-    get base() {
-        var b = this.base_milestone.filter(x => player.humanoid.mining_tier.gte(x)).length
-
-        return b
-    },
-
-    get ore_generator() {
-        var b = this.gen_milestone.filter(x => player.humanoid.mining_tier.gte(x)).length
-
-        return b
-    },
+    get base() { return this.base_milestone.filter(x => player.humanoid.mining_tier.gte(x)).length },
+    get ore_generator() { return this.gen_milestone.filter(x => player.humanoid.mining_tier.gte(x)).length},
 }
 
 var ores_grid = []
@@ -149,7 +144,6 @@ function reloadOres() {
         if (mf.mod(1).gt(Math.random())) fortune = fortune.add(1)
 
         var p = Math.random()**-0.5
-
         var health = Decimal.mul(p,10).mul(oo.dense??1).mul(h_inc).round()
         var value = Decimal.pow(2,fortune).mul(Decimal.mul(p,oo.mult??1).round(p))
 
@@ -165,14 +159,8 @@ function reloadOres() {
 }
 
 function setupCultivationHTML() {
-    var h = "", lang = lang_text("ore-names")
-
-    for (let x = 0; x < 8; x++) {
-        h += `
-        <div class="ore-grid" id="ore-grid-${x}"><div></div></div>
-        `
-    }
-
+    var h = ""
+    for (let x = 0; x < 8; x++) h += `<div class="ore-grid" id="ore-grid-${x}"><div></div></div>`
     el("ores-grid").innerHTML = h
 }
 
@@ -185,7 +173,6 @@ function updateCultivationHTML() {
 
     for (let x = 0; x < 8; x++) {
         var o = ores_grid[x], e = el(`ore-grid-${x}`)
-
         e.style.background = ORES[o.name].color
 
         var h = `${toColoredText(lang[o.name])} ${toColoredText('×'+o.value.format(0))}<br>${toTextStyle(o.health.format(0)+txt.heart,'red')}`
@@ -248,7 +235,6 @@ function updateCultivationTemp() {
     tmp.ore_generator = MINING_TIER.ore_generator
 
     tmp.mining_tier_bonus = MINING_TIER.bonus
-
     tmp.mining_damage = getMiningDamage()
     tmp.mining_speed = getMiningSpeed()
     tmp.mining_fortune = getMiningFortune()

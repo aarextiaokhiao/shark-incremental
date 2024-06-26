@@ -6,26 +6,18 @@ const SHARK = {
         fish: [()=>player.shark_level.gte(1),l=>expPow(Decimal.pow(tmp.shark_base,l).mul(l),getCRBoost(5)),E(0)],
         prestige: [()=>player.shark_level.gte(20),l=>Decimal.add(1.25,simpleResearchEffect('p1',0)).pow(l.sub(19)),E(1)],
         core: [()=>player.shark_level.gte(300),l=>Decimal.add(1.01,getCRBoost(4,0)).pow(l.sub(299)).overflow('ee3',0.5),E(1)],
-        // rad: [()=>player.shark_level.gte(600),l=>Decimal.pow(1.01,l.sub(599)),E(1)],
-    },
-
-    bonus() {
-        let l = player.shark_level, b = {}
-        b.fish = Decimal.pow(2,l).mul(l)
-        return b
     },
 
     get ELO() {
         var x = player.humanoid.shark.mul(player.shark_level)
 
-        var mult = E(0.1), exp = E(1)
-
+        var mult = E(0.1)
         mult = mult.mul(simpleETEffect(0)).mul(simpleETEffect(1)).mul(simpleETEffect(2)).mul(simpleETEffect(3)).mul(getCRBoost(7))
 
-        exp = exp.add(researchEffect('f1',0))
+        var exp = E(1)
+		exp = exp.add(researchEffect('f1',0))
 
         tmp.shark_elo_mult = mult, tmp.shark_elo_exp = exp
-
         return x.mul(mult).pow(exp).floor()
     },
 
@@ -36,8 +28,8 @@ const SHARK = {
     },
 
     rank: {
-        get require() { return Decimal.pow(1.2,player.shark_rank.add(1).scale(hasEvolutionGoal(8) ? 30 : 25,2,'P')).sub(1).mul(500).ceil() },
-        get bulk() { return tmp.shark_elo.div(500).add(1).log(1.2).scale(hasEvolutionGoal(8) ? 30 : 25,2,'P',true).floor() },
+        get require() { return Decimal.pow(1.2,player.shark_rank.add(1).scale(tmp.sr_scale,2,'P')).sub(1).mul(500).ceil() },
+        get bulk() { return tmp.shark_elo.div(500).add(1).log(1.2).scale(tmp.sr_scale,2,'P',true).floor() },
 
         bonuses: {
             fish: [()=>player.shark_rank.gte(1),l=>Decimal.pow(1.1,l),E(1)],
@@ -329,15 +321,16 @@ function updateSharkTemp() {
 
     tmp.shark_req_base = Decimal.sub(10,researchEffect('p3',0))
     if (hasResearch('p8')) tmp.shark_req_base = tmp.shark_req_base.sub(1)
+    for (let [i,v] of Object.entries(SHARK.bonuses)) tmp.shark_bonus[i] = v[0]() ? v[1](player.shark_level) : v[2]
 
+    for (let [i,v] of Object.entries(SHARK.bonuses)) tmp.shark_bonus[i] = v[0]() ? v[1](player.shark_level) : v[2]
     tmp.scale_shark1 = Decimal.add(10,sharkUpgEffect('p3',0)).add(hasDepthMilestone(2,2)?player.explore.depth[2].div(500).overflow(1e6,0.5).floor():0)
     tmp.scale_shark2 = Decimal.add(100,getCRBoost(3,0)).add(simpleResearchEffect('c10',0))
     tmp.scale_shark3 = Decimal.mul(1e3,hasResearch('m2')?2:1).mul(forgeUpgradeEffect('shark'))
 
-    for (let [i,v] of Object.entries(SHARK.bonuses)) tmp.shark_bonus[i] = v[0]() ? v[1](player.shark_level) : v[2]
-    for (let [i,v] of Object.entries(SHARK.rank.bonuses)) tmp.shark_rank_bonus[i] = v[0]() ? v[1](player.shark_rank) : v[2]
-
     tmp.shark_elo = SHARK.ELO
+	tmp.sr_scale = E(hasEvolutionGoal(8) ? 30 : 25)
+    for (let [i,v] of Object.entries(SHARK.rank.bonuses)) tmp.shark_rank_bonus[i] = v[0]() ? v[1](player.shark_rank) : v[2]
 }
 
 function updateSharkHTML() {

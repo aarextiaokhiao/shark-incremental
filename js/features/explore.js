@@ -248,9 +248,7 @@ function updateExplorationHTML() {
             if (i == a) {
                 let bb = getBaseExploration(i)
                 el(el_id+'explore').innerHTML = lang_text('explore-inside',b,bb,x.fish_req)
-                //`Base ${b.format()}/s`+(bb.gt(b) ? " ➜ " : " ~ ")+`${bb.format()}/s`+`.<br>Reach ${format(x.fish_req,0)} best ${fish_text}.`
-            }
-            else el(el_id+'explore').innerHTML = lang_text("explore-outside",b)
+            } else el(el_id+'explore').innerHTML = lang_text("explore-outside",b)
 
             let res = player.explore.res[i], curr = CURRENCIES[x.resource], text_curr = curr.costName
 

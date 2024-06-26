@@ -63,14 +63,6 @@ function setupCoreAssemblerHTML() {
     var h = ""
 
     for (let x = 0; x < 16; x++) {
-        /**
-        var ii = Math.floor(Math.random()*4)
-        var r = CORE_REACTOR[ii], a = CORE_ASSEMBLER[ii]
-        h += `<button class='ca-grid-btn active' id="ca-grid-${x}" style="--color1: ${a.color[0]}; --color2: ${a.color[1]};">
-            <div>${r.symbol}</div>
-            100%
-        </button>`
-        **/
         h += `<button class='ca-grid-btn' id="ca-grid-${x}-div" onclick="placeCABuildling(${x})"></button>`
     }
 
@@ -106,11 +98,15 @@ function purchaseCAMaxBuildings() {
 }
 
 function placeCABuildling(i,b=ca_builder) {
-    if (b == -1 || (player.core.assembler[i] >= 0 || tmp.totalCABuildings < player.core.max_buildings) && tmp.placedACBuildings[b] < tmp.maxCABuildingEach) {
-        player.core.assembler[i] = b
-
+	let erase = b == player.core.assembler[i] || b == -1
+    if (erase || tmp.totalCABuildings < player.core.max_buildings && tmp.placedACBuildings[b] < tmp.maxCABuildingEach) {
+        player.core.assembler[i] = erase ? -1 : b
         updateCoreAssemblerTemp()
     }
+}
+
+function undoCA() {
+	if (player.core.assembler_undo != undefined) player.core.assembler = [...player.core.assembler_undo]
 }
 
 function updateCoreAssemblerHTML() {
@@ -118,22 +114,25 @@ function updateCoreAssemblerHTML() {
     el('ca-building-limit').innerHTML = lang_text('core-assembler-building-limit',player.core.max_buildings,req,tmp.totalCABuildings)
     el('ca-building-limit').className = el_classes({locked: CURRENCIES.core.amount.lt(req), 'huge-btn': true})
 
+	el(`core-assembler-undo`).innerHTML = player.core.assembler_undo !== undefined ? "Undo" : "<b>NEW!</b> You can undo on the next Core reset."
+	el(`core-assembler-undo`).className = el_classes({ huge_btn: true, locked: player.core.assembler_undo === undefined })
+
     var icons = [icon("up-arrow"), icon("down-arrow")]
     var total_temp = E(6150)
 
     for (let i = 0; i < CORE_ASSEMBLER.length; i++) {
         var r = CORE_REACTOR[i], a = CORE_ASSEMBLER[i]
-
         var ss = player.core.assembler_strength[i], s = tmp.ca_building_strength[i]
-
-        // el(`ca-building-${i}-div`).className = el_classes({'ca-building': true, locked: tmp.placedACBuildings[i]>=1 || tmp.totalCABuildings>=player.core.max_buildings})
 
         el(`ca-building-${i}-desc`).innerHTML = lang_text('core-assembler-building-stats',compareStyle(formatPercent(s,0),s,ss),tmp.placedACBuildings[i],tmp.maxCABuildingEach) + "<br>"
         + lang_text(`ca-building-base`,a.res_text) + "<br>"
-        + lang_text(`ca-building-temp`,compareStyle(format(a.temperature(s))+"°K",s,ss)) // + " " + lang_text(`core-${i}-assemble`)
+        + lang_text(`ca-building-temp`,compareStyle(format(a.temperature(s))+"°K",s,ss))
+
+        el(`ca-building-${i}-div`).className = el_classes({ ["ca-building"]: true, locked: ca_builder == i })
 
         total_temp = total_temp.add(a.temperature(s))
     }
+
 
     if (ca_builder >= 0) {
         var a = CORE_ASSEMBLER[ca_builder]

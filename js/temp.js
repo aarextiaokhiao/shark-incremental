@@ -41,7 +41,6 @@ function reloadTemp() {
         ore_generator: 0,
         mining_speed: E(1),
         mining_damage: E(1),
-
         mining_tier_bonus: [],
 
         forge_speed: E(1),

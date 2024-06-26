@@ -27,7 +27,7 @@ function loadGame(start=true, gotNaN=false) {
             if (offline_t > 60 && player.radios["offline"]) simulateOffline(offline_t)
             else el("app").style.display = ""
             
-            autosave = setInterval(save, [15000,30000,60000,120000][player.radios["autosave-time"]], true)
+            autosave = setInterval(save, [1/0,15000,30000,60000,120000][player.radios["autosave"]], true)
             setInterval(loop, 1000/FPS)
         }, 100);
     }
@@ -43,10 +43,7 @@ function setupOptions() {
     })
 
     createRadio(...getLangRadio('autosave'), {
-        start_position: 1,
-    })
-    createRadio(...getLangRadio('autosave-time'), {
-        start_position: 2,
+        start_position: 3,
         width: 60,
     })
     

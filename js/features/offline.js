@@ -39,7 +39,7 @@ function simulateOffline(time) {
         var diff = (Date.now()-date)/1000
         var dt = Math.min(time,offline.elapsed+diff*offline.speed)-offline.elapsed
         tt += diff
-        // console.log(diff,dt,tt)
+
         calc(dt)
         offline.elapsed += dt
 

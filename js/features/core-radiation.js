@@ -7,29 +7,22 @@ const CORE_RAD = {
         doReset("core",true)
     },
 
-    gain() {
-        let x = this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(tmp.explore_eff[4]??1)
-
-        return x
+    purchaseGeneration() {
+        var r_c15 = hasResearch('c15'), active = tmp.cr_active
+        if (!r_c15 && !active) return
+        let x = player.core.radiation.gen, amt = CURRENCIES.fish.amount.pow(!active && r_c15 ? researchEffect('c15',0) : 1)
+        if (amt.gte(this.genCost(x))) player.core.radiation.gen = this.genBulk(amt).max(x.add(1))
     },
+    genCost: l => Decimal.pow('e850', Decimal.pow(1.05, l)),
+    genBulk: x => x.log('e850').log(1.05).floor().add(1),
+    genValue: l => Decimal.pow(2,l.sub(1)).mul(l),
 
+    gain() { return this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(tmp.explore_eff[4]??1) },
     limit() {
         let x = Decimal.mul(this.limitIncrease(),1e6).div(simpleResearchEffect("c6"))
-
         if (hasDepthMilestone(4,0)) x = x.div(1e3)
-
         return x
     },
-    boostBulk() {
-        let x = player.core.radiation.amount
-
-        if (hasDepthMilestone(4,0)) x = x.mul(1e3)
-
-        x = x.div(1e6).mul(simpleResearchEffect("c6")).log(1e3).root(hasResearch('c12') ? 1.2 : 1.25).scale(tmp.cr_scale1,2,'P',true).scale(tmp.cr_scale2,2,'P',true).floor().add(1)
-
-        return x
-    },
-
     limitIncrease() {
         let x = Decimal.pow(1e3,player.core.radiation.boost.scale(tmp.cr_scale2,2,'P').scale(tmp.cr_scale1,2,'P').pow(hasResearch('c12') ? 1.2 : 1.25))
 
@@ -52,21 +45,15 @@ const CORE_RAD = {
             }
         }
     },
+    boostBulk() {
+        let x = player.core.radiation.amount
 
-    genCost: l => Decimal.pow('e850', Decimal.pow(1.05, l)),
-    genBulk: x => x.log('e850').log(1.05).floor().add(1),
+        if (hasDepthMilestone(4,0)) x = x.mul(1e3)
 
-    genValue: l => Decimal.pow(2,l.sub(1)).mul(l),
+        x = x.div(1e6).mul(simpleResearchEffect("c6")).log(1e3).root(hasResearch('c12') ? 1.2 : 1.25).scale(tmp.cr_scale1,2,'P',true).scale(tmp.cr_scale2,2,'P',true).floor().add(1)
 
-    purchaseGeneration() {
-        var r_c15 = hasResearch('c15'), active = tmp.cr_active
-        if (!r_c15 && !active) return
-        let x = player.core.radiation.gen, amt = CURRENCIES.fish.amount.pow(!active && r_c15 ? researchEffect('c15',0) : 1)
-        if (amt.gte(this.genCost(x))) {
-            player.core.radiation.gen = this.genBulk(amt).max(x.add(1))
-        }
+        return x
     },
-
     boosts: [
         {
             req: 0,
