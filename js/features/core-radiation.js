@@ -17,7 +17,7 @@ const CORE_RAD = {
     genBulk: x => x.log('e850').log(1.05).floor().add(1),
     genValue: l => Decimal.pow(2,l.sub(1)).mul(l),
 
-    gain() { return this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(tmp.explore_eff[4]??1) },
+    gain() { return this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(tmp.explore_eff[4]??1).pow(getPAEffect(0)) },
     limit() {
         let x = Decimal.mul(this.limitIncrease(),1e6).div(simpleResearchEffect("c6"))
         if (hasDepthMilestone(4,0)) x = x.div(1e3)
@@ -122,6 +122,13 @@ const CORE_RAD = {
             req: 45,
             effect: (r,b)=>{
                 let x = r.add(1).log10().mul(b.add(1)).add(1).log10().div(100).add(1)
+
+                return x
+            },
+        },{
+            req: 64,
+            effect: (r,b)=>{
+                let x = r.add(1).log10().mul(b.add(1)).add(1).log10().add(1)
 
                 return x
             },

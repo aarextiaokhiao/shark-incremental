@@ -29,6 +29,7 @@ function setupHTML() {
     setupCoreHTML()
     setupEvolutionHTML()
     setupForgeHTML()
+    setupPAHtml()
 
     let text = lang_text("option-buttons-text")
     el('option-buttons').innerHTML = `
