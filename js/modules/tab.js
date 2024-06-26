@@ -2,7 +2,7 @@ var tab = 0, stab = [0,0,0,0,0], tab_name = 'shark'
 
 const TAB_IDS = {
     'shark': {
-        html: updateSharkHTML,
+        html() { updateSharkHTML() },
 
         notify() {
             return !isAutoEnabled('shark') && CURRENCIES.fish.amount.gte(SHARK.cost())
@@ -16,7 +16,7 @@ const TAB_IDS = {
         },
     },
     'auto': {
-        html: updateAutomationHTML,
+        html() { updateAutomationHTML() },
         
         notify() {
             for (let [i,x] of Object.entries(AUTOMATION)) {
@@ -27,7 +27,7 @@ const TAB_IDS = {
         },
     },
     'research': {
-        html: updateResearchHTML,
+        html() { updateResearchHTML() },
 
         notify() {
             for (let [i,x] of Object.entries(RESEARCH)) {
@@ -51,7 +51,7 @@ const TAB_IDS = {
         },
     },
     'explore': {
-        html: updateExplorationHTML,
+        html() { updateExplorationHTML() },
 
         notify() {
             if (isAutoEnabled('eu')) return false
@@ -66,7 +66,7 @@ const TAB_IDS = {
         },
     },
     'core-reactor': {
-        html: updateCoreHTML,
+        html() { updateCoreHTML() },
 
         notify() {
             if (isAutoEnabled('core_reactor')) return false
@@ -77,7 +77,7 @@ const TAB_IDS = {
         },
     },
     'core-radiation': {
-        html: updateCoreRadiation,
+        html() { updateCoreRadiation() },
 
         notify() {
             var rad = player.core.radiation
@@ -88,17 +88,17 @@ const TAB_IDS = {
         },
     },
     'core-assembler': {
-        html: updateCoreAssemblerHTML,
+        html() { updateCoreAssemblerHTML() },
 
         notify() {
             return CURRENCIES.core.amount.gte(CA_MAX_BUILDINGS_COST[player.core.max_buildings]??EINF)
         },
     },
     'shark-rank': {
-        html: updateSharkRankHTML,
+        html() { updateSharkRankHTML() },
     },
     'evolution-tree': {
-        html: updateEvolutionTreeHTML,
+        html() { updateEvolutionTreeHTML() },
 
         notify() {
             for (let i = 0; i < EVOLUTION_TREE.faith_cost.length; i++) {
@@ -114,17 +114,17 @@ const TAB_IDS = {
         },
     },
     'evolution-goal': {
-        html: updateEvolutionGoalHTML,
+        html() {  updateEvolutionGoalHTML() },
     },
     'cultivation': {
-        html: updateCultivationHTML,
+        html() { updateCultivationHTML() },
 
         notify() {
             return CURRENCIES.stone.amount.gte(MINING_TIER.require)
         },
     },
     'forge': {
-        html: updateForgeHTML,
+        html() { updateForgeHTML() },
 
         notify() {
             if (player.humanoid.forge.queue != '') return false
@@ -133,7 +133,7 @@ const TAB_IDS = {
         },
     },
     'particle-accel': {
-        html: updatePAHtml,
+        html() { pdatePAHtml() },
     },
 }
 
