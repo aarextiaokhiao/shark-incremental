@@ -17,6 +17,7 @@ const RESETS = {
 
             resetSharkUpgrades('s1','s2','s3','s4')
         },
+		minimum_threshold: 1,
     },
     core: {
         get require() { return player.prestige.total.gte('e450') }, 
@@ -52,9 +53,10 @@ const RESETS = {
 
             RESETS.prestige.doReset()
         },
+		minimum_threshold: 6,
     },
     humanoid: {
-        get require() { return player.fish.gte(CURRENCIES.humanoid.require) }, 
+        get require() { return player.fish.gte(CURRENCIES.humanoid.require) },
         reset(force) {
             if (!force) {
                 gainCurrency('humanoid',tmp.currency_gain.humanoid)
@@ -99,11 +101,12 @@ const RESETS = {
 
             RESETS.core.doReset()
         },
+		minimum_threshold: 11,
     },
 }
 
 function doReset(id, force, ...arg) {
     var r = RESETS[id]
-    if (force || !player.radios['confirm-'+id] && r.require) r.reset(force, ...arg)
+    if (force || player.feature >= r.minimum_threshold && r.require) r.reset(force, ...arg)
     else if (r.require) createConfirmationPopup(lang_text('reset-'+id+"-message"), () => {r.reset(false, ...arg)})
 }

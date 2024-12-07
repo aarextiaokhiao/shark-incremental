@@ -77,9 +77,8 @@ LANGUAGES.EN = {
         'shark-rank-req-div': `The next rank requires ${toTextStyle('Shark','shark')} ELO <h4>${toTextStyle('0','humanoid','shark-rank-req')}</h4>.`,
         'shark-rank-note': `Note: Shark Rank gets reset when you trigger an Evolution reset.`,
 
-        'option-title-1': "Main Options",
-        'option-title-2': "Notations",
-        'option-title-3': "Confirmations",
+        'option-title-1': "Saving",
+        'option-title-2': "Options",
 
         'offline-speed': "Speed up Offline time",
         'offline-done': "Done",
@@ -710,7 +709,7 @@ LANGUAGES.EN = {
         },
 
         'radio-desc' : {
-            'notation': ['Formatting Notation',['Scientific','Default']],
+            'notation': ['Notation',['Scientific','Default']],
             'autosave': ['Autosaving',['Disabled','15s','30s','60s','120s']],
             'offline': ['Offline Progress',['Disabled','Enabled']],
             'max-research-amt': ['Maximum research upgrades per page',['15','20','25']],
@@ -723,9 +722,5 @@ LANGUAGES.EN = {
         'prompt-placeholder': "Type text here...",
 
         'option-buttons-text': ["Save","Export to clipboard","Export as file","Import from prompt","Import from file","WIPE!!!",'Join the community (Discord)'],
-
-        'confirm-prestige': "Prestige",
-        'confirm-core': "Enter the Core",
-        'confirm-humanoid': "Evolve Sharks",
     },
 }

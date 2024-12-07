@@ -10,9 +10,6 @@ const TAB_IDS = {
     },
     'options': {
         html() {
-            for (let [i,x] of Object.entries(CONFIRMATIONS)) {
-                el("radio-confirm-"+i).style.display = el_display(x[0]())
-            }
         },
     },
     'auto': {

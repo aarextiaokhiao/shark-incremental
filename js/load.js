@@ -61,14 +61,4 @@ function setupOptions() {
     createRadio(...getLangRadio('visible-research'), {
         start_position: 0,
     })
-
-    // Confirmations
-
-    let e = el('confirmations-table')
-    for (let [i,x] of Object.entries(CONFIRMATIONS)) {
-        e.innerHTML += `<div id="radio-confirm-${i}" class="input-radio"></div><br>`
-        createRadio('confirm-'+i, lang_text('confirm-'+i), lang_text("radio-desc-default"), {
-            start_position: 1,
-        })
-    }
 }
