@@ -27,17 +27,20 @@ const TOP_CURR = [
     {
         unl: ()=>player.core.times > 0 || hasDepthMilestone(0,4),
         curr: "core",
+        style: "core",
         req: ()=>player.prestige.total.gte(CURRENCIES.core.require),
     },
     {
         unl: ()=>player.humanoid.times > 0 || player.feature >= 10,
         curr: "humanoid",
+        style: "evolution",
         req: ()=>player.fish.gte(CURRENCIES.humanoid.require),
     },
     {
         unl: ()=>player.feature >= 18 && !tmp.ss_difficulty,
         reset: "sacrifice",
         curr: "dark-matter",
+        style: "singularity",
         req: ()=>player.fish.gte(CURRENCIES['dark-matter'].require) && player.singularity.bh.gte(8),
     },
     {
@@ -53,6 +56,7 @@ const TOP_CURR = [
     {
         unl: ()=>player.hadron.times > 0 || isSSObserved('sun'),
         curr: "hadron",
+        style: "hadron",
         req: ()=>player.fish.gte(CURRENCIES.hadron.require),
     },
 ]

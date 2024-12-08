@@ -20,7 +20,7 @@ const RESETS = {
 		minimum_threshold: 1,
     },
     core: {
-        get require() { return player.prestige.total.gte('e450') }, 
+        get require() { return player.prestige.total.gte('e450') },
         reset(force) {
             if (!force) {
                 gainCurrency('core',tmp.currency_gain.core)

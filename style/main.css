@@ -116,9 +116,15 @@ button * {
 	pointer-events: none;
 }
 
-button:not(.pre-charged,.locked,.bought,.selected,#wipe,.ca-grid-btn,:active,.evolution-goal-ctn,#black-hole-button,.remnant-upg,.small-upg):hover {
-	background-color: #0b6965;
-	border-color: #043f3c;
+button:not(.pre-charged,.locked,.bought,#wipe,.ca-grid-btn,.evolution-goal-ctn,#black-hole-button,.remnant-upg,.small-upg) {
+	&:hover {
+		background-color: #0b6965;
+		border-color: #043f3c;
+	}
+	&.selected,
+	&:active {
+		background-color: #075551;
+	}
 }
 
 button.big-btn {
@@ -134,11 +140,6 @@ button.huge-btn {
 button.half-huge-btn {
 	width: 250px;
 	height: 50px;
-}
-
-.tab-button.selected,
-button:not(.pre-charged,.locked,.bought,.ca-grid-btn,.evolution-goal-ctn,#black-hole-button,.remnant-upg,.small-upg):active {
-	background-color: #075551;
 }
 
 input.no-arrows {
@@ -656,8 +657,8 @@ li {
 }
 
 .ca-grid-btn {
-	background-color: #075551;
-	border: solid 2px #02302d;
+	background-color: rgb(185, 43, 0);
+	border: solid 2px darkred;
 	margin: 2px;
 	padding: 0px;
 
@@ -699,6 +700,19 @@ li {
 	height: 20px;
 	box-shadow: inset 0px 0px 4px var(--color1), inset 0px 0px 4px var(--color1), 2px 2px 0px black;
 	background-color: var(--color2);
+}
+
+button.core,
+.core button:not(.ca-grid-btn) {
+	background: rgb(255, 60, 0) !important;
+	border: solid 2px darkred !important;
+	&.locked {
+		background: rgb(121, 28, 0) !important;
+	}
+	&.selected,
+	&:not(.locked):hover {
+		background: rgb(185, 43, 0) !important;
+	}
 }
 
 subtitle {
@@ -922,6 +936,19 @@ subtitle {
 	filter: drop-shadow(1px 1px 0px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black);
 }
 
+button.evolution,
+.evolution button:not(.bought, .pre-charged, .charged) {
+	background: rgb(30, 191, 63) !important;
+	border: solid 2px darkgreen !important;
+	&.locked {
+		background: rgb(0, 64, 0) !important;
+	}
+	&.selected,
+	&:not(.locked):hover {
+		background: rgb(15, 95, 31) !important;
+	}
+}
+
 #scalings-table {
 	border: solid 1px black;
 	table-layout: fixed;
@@ -1111,6 +1138,19 @@ subtitle {
 	font-size: 14px;
 }
 
+button.singularity,
+.singularity button:not(.small-upg, .bought) {
+	background: #b7b !important;
+	border: solid 2px #707 !important;
+	&.locked {
+		background: #707 !important;
+	}
+	&.selected,
+	&:not(.locked):hover {
+		background: #505 !important;
+	}
+}
+
 #hadron-cutscene {
 	pointer-events: none;
 	position: fixed;
@@ -1139,6 +1179,19 @@ subtitle {
 
 	transition: opacity linear;
 	transition-duration: 5s;
+}
+
+button.hadron,
+.hadron button:not(.bought) {
+	background: #bb3 !important;
+	border: solid 2px #773 !important;
+	&.locked {
+		background: #993 !important;
+	}
+	&.selected,
+	&:not(.locked):hover {
+		background: #663 !important;
+	}
 }
 
 #starter-upgrades-table {

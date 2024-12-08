@@ -74,7 +74,7 @@ function updateTopCurrenciesHTML() {
 
         let req = !x.req || x.req()
         el(`curr-top-${i}-btn`).innerHTML = req ? lang_text('curr-top-'+i+'-reset',tmp.currency_gain[x.curr],...c.moreArg??[]) : lang_text('curr-top-'+i+'-req',c.require)
-        el(`curr-top-${i}-btn`).className = el_classes({locked: !req})
+        el(`curr-top-${i}-btn`).className = el_classes({[x.style]: true, locked: !req})
     }
 }
 

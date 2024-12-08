@@ -150,19 +150,19 @@
                     </div>
                 </div>
             </div>
-        </div><div id="core-reactor-tab">
+        </div><div class="core" id="core-reactor-tab">
             <div id="core-reactor-table"></div>
             <p id="core-reactor-bonus"></p>
-        </div><div id="core-radiation-tab">
+        </div><div class="core" id="core-radiation-tab">
             <details id="radioactive-summary"></details>
             <table class="table">
                 <tr>
                     <td style="width: 50%;">
                         <p id="radioactive-div"></p>
                         <div class="table-center">
-                            <button class="huge-btn" id="start-cr-experiment" onclick="CORE_RAD.experiment()"></button>
-                            <button class="huge-btn" id="upgrade-cr-btn" onclick="CORE_RAD.purchaseGeneration()"></button>
-                            <button class="huge-btn" id="reset-cr-btn" onclick="CORE_RAD.purchaseBoost()" style="font-size: 12px;"></button>
+                            <button class="huge-btn core" id="start-cr-experiment" onclick="CORE_RAD.experiment()"></button>
+                            <button id="upgrade-cr-btn" onclick="CORE_RAD.purchaseGeneration()"></button>
+                            <button id="reset-cr-btn" onclick="CORE_RAD.purchaseBoost()" style="font-size: 12px;"></button>
                         </div>
                         <p id="core-temp-div"></p>
                     </td><td style="width: 50%;">
@@ -171,13 +171,13 @@
                     </td>
                 </tr>
             </table>
-        </div><div id="core-assembler-tab">
+        </div><div class="core" id="core-assembler-tab">
             <table class="table">
                 <tr>
                     <td style="width: 50%;">
                         <div class="table-center">
                             <button id="ca-building-limit" class="huge-btn" onclick="purchaseCAMaxBuildings()"></button>
-                            <button class="huge-btn" id="core-assembler-erase" onclick="chooseCABuilding(-1)"></button><br>
+                            <button class="huge-btn core" id="core-assembler-erase" onclick="chooseCABuilding(-1)"></button><br>
                             <button id="core-assembler-undo" onclick="undoCA()"></button>
                         </div>
                         <div id="core-assembler-grid"></div>
@@ -203,7 +203,7 @@
                     </td>
                 </tr>
             </table>
-        </div><div id="evolution-tree-tab">
+        </div><div class="evolution" id="evolution-tree-tab">
             <table class="table">
                 <tr>
                     <td style="width: 50%;">
@@ -221,10 +221,10 @@
                     </td>
                 </tr>
             </table>
-        </div><div id="evolution-goal-tab">
+        </div><div class="evolution" id="evolution-goal-tab">
             <button class="big-btn" id="rerun-evolution" onclick="respecEvolutionTree(true)"></button>
             <div id="evolution-goal-grid"></div>
-        </div><div id="cultivation-tab">
+        </div><div class="evolution" id="cultivation-tab">
             <table class="table">
                 <tr>
                     <td style="width: 30%;">
@@ -251,7 +251,7 @@
                     </td>
                 </tr>
             </table>
-        </div><div id="forge-tab">
+        </div><div class="evolution" id="forge-tab">
             <div id="forge-status"></div><div style="width: 100%; min-height: 209px; margin-bottom: 3px; padding-bottom: 3px; border-bottom: solid 2px #075551;">
                 <div id="forge-description-div">
                     <div id="forge-description">
@@ -280,7 +280,7 @@
             <div id="singularity-milestones">
                 <div class="singularity-milestone">AAA</div>
             </div>
-        </div><div id="solar-system-tab">
+        </div><div class="singularity" id="solar-system-tab">
             <div class="table-center" style="align-items: start;">
                 <div id="solar-system">
                     <button id="ss-moon" style="grid-column: 1 / 3;"><img src="textures/solar-system/hidden.png"><br>Moon</button>
@@ -308,7 +308,7 @@
                     </div>
                 </div>
             </div>
-        </div><div id="constellation-tab">
+        </div><div class="singularity" id="constellation-tab">
             <p id="bh-tier-div"></p>
             <button id="bh-tier-button" class="huge-btn" onclick="CONSTELLATION.upgrade()" style="font-size: 12px;">Reach the requirement to increase the black hole tier.</button>
             <div id="constellation-progress" style="width: 500px; margin: auto;">
@@ -340,7 +340,7 @@
             </div>
         </div>
 
-        <div id="hadron-su-tab">
+        <div class="hadron" id="hadron-su-tab">
             <p id="fundamental-amount-div"></p>
             <subtitle id="starter-upg-note"></subtitle>
             <div id="starter-upgrades-table">
@@ -365,7 +365,7 @@
                     </td>
                 </tr>
             </table>
-        </div><div id="nucleobase-tab">
+        </div><div class="hadron" id="nucleobase-tab">
             <div id="nucleobases-table">
                 <div class="nucleobase-div">
                     <div class="nucleobase-name">
