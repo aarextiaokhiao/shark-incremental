@@ -3,7 +3,6 @@ const RESEARCH = {
         unl: ()=>true,
         require: [
             ['prestige',false,1e9],
-            // ['prestige',false,l=>Decimal.pow(10,l).mul(1e7),x=>x.div(1e7).log(10).floor().add(1)],
         ],
         effect(r) {
             return Decimal.div(sharkUpgEffect('s2',0),100)
@@ -24,6 +23,7 @@ const RESEARCH = {
             ['prestige',false,l=>[1e13,1e15,1e24,1e30,1e48][l.round().toNumber()]??EINF,x=>0],
         ],
         onBuy() {
+            if (player.singularity.best_bh.gte(5)) return;
             CURRENCIES.prestige.amount = E(0)
             resetSharkUpgrades('p1','p2')
             doReset('prestige',true)
@@ -129,6 +129,12 @@ const RESEARCH = {
         unl: ()=>player.feature>=14,
         require: [
             ['kelp',false,'e700'],
+        ],
+    },
+    e7: {
+        unl: ()=>isSSObserved('uranus'),
+        require: [
+            ['kelp',false,'ee100'],
         ],
     },
 
@@ -287,6 +293,59 @@ const RESEARCH = {
         },
         effDesc: x => "+"+formatPercent(x.sub(1),0),
     },
+    m5: {
+        tier: 2,
+        unl: ()=>player.humanoid.mining_ascend.gte(3),
+        require: [
+            ['uranium',false,10],
+        ],
+        effect() {
+            return Decimal.add(getSharkRankBonus('mining_damage'),10).log10()
+        },
+        effDesc: x => formatMult(x),
+    },
+    m6: {
+        tier: 2,
+        unl: ()=>player.humanoid.mining_ascend.gte(3),
+        require: [
+            ['uranium',false,500],
+        ],
+    },
+    m7: {
+        tier: 2,
+        unl: ()=>player.humanoid.mining_ascend.gte(25),
+        require: [
+            ['oganesson',false,1e3],
+        ],
+    },
+    m8: {
+        tier: 2,
+        unl: ()=>player.humanoid.mining_ascend.gte(25),
+        require: [
+            ['oganesson',false,1e4],
+        ],
+    },
+    m9: {
+        tier: 2,
+        unl: ()=>hasForgeUpgrade('adv_research',4),
+        require: [
+            ['sharkium',false,1e3],
+        ],
+    },
+    m10: {
+        tier: 2,
+        unl: ()=>hasForgeUpgrade('adv_research',4),
+        require: [
+            ['sharkium',false,1e4],
+        ],
+    },
+    m11: {
+        tier: 2,
+        unl: ()=>hasForgeUpgrade('adv_research',4),
+        require: [
+            ['sharkium',false,1e5],
+        ],
+    },
 
     f1: {
         max: 10,
@@ -356,20 +415,278 @@ const RESEARCH = {
             ['vibranium',false,1e10],
         ],
     },
+
+    s1: {
+        tier: 2,
+        unl: ()=>player.singularity.best_bh.gte(3),
+        require: [
+            ['remnants',false,1e3],
+        ],
+        effect(r) {
+            return expPow(CURRENCIES.fish.amount.add(1).log10().add(1).log10().mul(2).add(1),2)
+        },
+        effDesc: x => formatMult(x),
+    },
+    s2: {
+        tier: 2,
+        unl: ()=>player.singularity.best_bh.gte(7),
+        require: [
+            ['remnants',false,1e30],
+        ],
+    },
+    s3: {
+        tier: 2,
+        unl: ()=>player.singularity.best_bh.gte(8),
+        require: [
+            ['remnants',false,1e48],
+        ],
+    },
+    s4: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',true,1e4],
+            ['remnants',false,1e70],
+        ],
+    },
+    s5: {
+        max: 6,
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['remnants',false,a=>a.pow_base(1e15).mul(1e75),a=>a.div(1e75).log(1e15).add(1).floor()],
+        ],
+    },
+    
+    dm1: {
+        max: 8,
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',true,a=>a.pow_base(10).ceil(),a=>a.log(10).add(1).floor()],
+        ],
+        onBuy() {
+            player.singularity.bh = player.singularity.bh.max(player.research.dm1)
+        },
+    },
+    dm2: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,1],
+        ],
+    },
+    dm3: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,10],
+        ],
+    },
+    dm4: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,100],
+        ],
+    },
+    dm5: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,1e6],
+        ],
+    },
+    dm6: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,1e8],
+            ['core',false,'e5e17'],
+        ],
+    },
+    dm7: {
+        tier: 2,
+        unl: ()=>player.feature>=19,
+        require: [
+            ['dark-matter',false,1e10],
+            ['remnants',false,'1e110'],
+        ],
+        effect(r) {
+            return CURRENCIES['dark-matter'].total.add(1)
+        },
+        effDesc: x => formatMult(x),
+    },
+
+    o1: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 3,
+        require: [
+            ['reserv',false,1e6],
+        ],
+    },
+    o2: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 5,
+        require: [
+            ['reserv',false,1e150],
+        ],
+    },
+    o3: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 6,
+        require: [
+            ['reserv',false,'1e1996'],
+        ],
+    },
+
+    r1: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 5,
+        require: [
+            ['traject',false,1e6],
+        ],
+    },
+    r2: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 5,
+        require: [
+            ['traject',false,1e12],
+        ],
+    },
+    r3: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 6,
+        require: [
+            ['traject',false,1e24],
+        ],
+    },
+
+    t1: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 7,
+        require: [
+            ['traject',false,1e250],
+        ],
+    },
+    t2: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 7,
+        require: [
+            ['traject',false,'e500'],
+        ],
+    },
+    t3: {
+        tier: 2,
+        unl: ()=>tmp.ss_difficulty >= 8,
+        require: [
+            ['traject',false,'ee6'],
+        ],
+    },
+
+    h1: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',true,5]
+        ],
+        effect(r) {
+            let x = player.shark_level.add(10).slog(10)
+            if (hasResearch('h6')) x = x.max(player.shark_level.add(1).slog(2).pow_base(2));
+            return x
+        },
+        effDesc: x => formatMult(x),
+    },
+    h2: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',true,100]
+        ],
+    },
+    h3: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e6]
+        ],
+        effect(r) {
+            return player.hadron.total.add(1).log10()
+        },
+        effDesc: x => "+"+format(x,3),
+    },
+    h4: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e10]
+        ],
+    },
+    h5: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e20]
+        ],
+    },
+    h6: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e50]
+        ],
+        effect(r) {
+            return player.fish.add(1).slog(2).pow_base(2)
+        },
+        effDesc: x => formatMult(x),
+    },
+    h7: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e63],
+            ['remnants',false,'ee45'],
+        ],
+    },
+    h8: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,1e93]
+        ],
+    },
+    h9: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,'1e1000']
+        ],
+    },
+    h10: {
+        tier: 3,
+        unl: ()=>player.hadron.times,
+        require: [
+            ['hadron',false,'1e3000']
+        ],
+    },
 }
 
 const RESEARCH_KEYS = Object.keys(RESEARCH)
 const MAX_RESEARCH = [15,20,25]
 
+const PRE_BH_RESEARCH = RESEARCH_KEYS.filter(x => RESEARCH[x].tier < 2)
+const PRE_HADRON_RESEARCH = RESEARCH_KEYS.filter(x => RESEARCH[x].tier < 3)
+
 var research_page = 1
 
 function setupResearchHTML() {
+    let text = lang_text('all-research')
     el('research-table').innerHTML = Object.entries(RESEARCH).map(
         ([i,x]) => {
             return `
             <div class="research-div" id="research-${i}-div">
-                <div class="research-name">${lang_text('research-'+i+'-name')}</div>
-                <div class="research-desc" id="research-${i}-desc">${x.desc}</div>
+                <div class="research-name">${text[i]?.[0] ?? lang_text('research-'+i+'-name')}</div>
+                <div class="research-desc" id="research-${i}-desc">???</div>
                 <div class="research-short-text" id="research-${i}-require"></div>
                 <div class="research-status" id="research-${i}-status">
                     <div><b>Not Purchased</b></div>
@@ -385,7 +702,7 @@ function setupResearchHTML() {
     ).join("")
 }
 
-function hasResearch(id) { return player.research[id].gte(1) }
+function hasResearch(id,l=1) { return player.research[id].gte(l) }
 function isResearchMaxed(id) { return player.research[id].gte(RESEARCH[id].max??1) }
 function researchEffect(id,def=E(1)) { return tmp.research_eff[id]??def }
 function simpleResearchEffect(id,def=E(1)) { return player.research[id].gte(1)?tmp.research_eff[id]??def:def }
@@ -429,10 +746,10 @@ function changeResearchPage(diff) {
 }
 
 function updateResearchHTML() {
-    let text = [lang_text('effect'),lang_text('level'),lang_text('require')]
+    let text = [lang_text('effect'),lang_text('level'),lang_text('require'),lang_text('all-research')]
 
     var hidden = player.radios['visible-research']
-    var visible_research = hidden ? RESEARCH_KEYS.filter(x => !isResearchMaxed(x)) : RESEARCH_KEYS
+    var visible_research = (hidden ? RESEARCH_KEYS.filter(x => !isResearchMaxed(x)) : RESEARCH_KEYS).filter(x => RESEARCH[x].unl())
 
     var m = MAX_RESEARCH[player.radios['max-research-amt']]
     var unl = visible_research.length > m
@@ -453,7 +770,7 @@ function updateResearchHTML() {
         if (unl) {
             let amt = player.research[i], max = x.max??1, bought = amt.gte(max), afford = true
 
-            el(el_id+"-desc").innerHTML = `<b style="font-size:12px">[${i}]</b> ` + lang_text(el_id+"-desc")
+            el(el_id+"-desc").innerHTML = `<b style="font-size:12px">[${i}]</b> ` + (text[3][i]?.[1] ?? lang_text(el_id+"-desc"))
             el(el_id+"-require").style.display = el_display(!bought)
             el(el_id+"-button").style.display = el_display(!bought)
             if ((x.max??1)>1&&!x.noBuyMax) el(el_id+"-max-button").style.display = el_display(!bought)
@@ -461,7 +778,7 @@ function updateResearchHTML() {
                 el(el_id+"-require").innerHTML = `<b>${text[2]}:</b> ` + x.require.map(r => {
                     let curr = CURRENCIES[r[0]], cost = max>1?r[2](amt):r[2], a = (r[1]?curr.total:curr.amount).gte(cost)
                     if (afford) afford &&= a
-                    return `<span ${a ? "" : `style="color: #800"`}>${format(cost,0)}</span>`+" "+(r[1]?"total ":"")+curr.costName
+                    return `<span ${a ? "" : `style="color: #800"`}>${format(cost,0)}</span>`+" "+(r[1]?lang_text("total")+" ":"")+curr.costName
                 }).join(", ")
                 el(el_id+"-button").className = el_classes({locked: !afford})
                 el(el_id+"-button").textContent = lang_text('research-afford',afford)

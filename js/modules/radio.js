@@ -32,6 +32,6 @@ function chooseRadio(id,v) {
 
     if (id == 'autosave') {
         clearInterval(autosave)
-        autosave = setInterval(save, [1/0,15000,30000,60000,120000][player.radios[id]], true)
+        autosave = setInterval(save, [1/0,15000,30000,60000][player.radios[id]], true)
     }
 }

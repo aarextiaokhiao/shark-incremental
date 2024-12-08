@@ -46,11 +46,20 @@ text-style {
     &[text="gold"] {
         color: gold;
     };
+    &[text="hadron"] {
+        color: #ff8;
+        text-shadow: 1px 1px 0px black, 0px 0px 2px black, 1px 1px 2px black, -1px -1px 2px #ff0, 1px 1px 2px #ff0, -2px -2px 4px #880, 2px 2px 4px #880;
+    };
 
     @supports (-webkit-background-clip: text) and (-webkit-text-fill-color: transparent) {
         &[text="core"],
         &[text="humanoid"],
-        &[text="black-hole"] {
+        &[text="black-hole"],
+        &[text="observ"],
+        &[text="reserv"],
+        &[text="traject"],
+        &[text="experiment"],
+        &[text="star"] {
             filter: drop-shadow(1px 1px black) drop-shadow(0px 0px 1px black);
             text-shadow: none;
         };
@@ -66,7 +75,32 @@ text-style {
             -webkit-text-fill-color: transparent;
         };
         &[text="black-hole"] {
-            background: linear-gradient(magenta, purple, #303, purple, magenta);
+            background: linear-gradient(magenta, magenta, purple, magenta, magenta);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        };
+        &[text="observ"] {
+            background: repeating-linear-gradient(-45deg, cyan, #00aeff 20px, cyan 40px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        };
+        &[text="reserv"] {
+            background: repeating-linear-gradient(-45deg, #00aeff, #0051ff 20px, #00aeff 40px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        };
+        &[text="traject"] {
+            background: repeating-linear-gradient(-45deg, #e5ff00, #73ff00 20px, #e5ff00 40px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        };
+        &[text="experiment"] {
+            background: repeating-linear-gradient(-45deg, #ff3c00, #ff9100 20px, #ff3c00 40px);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        };
+        &[text="star"] {
+            background: repeating-linear-gradient(90deg, #c5fff7, #edff9e 20px, #c5fff7 40px);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         };

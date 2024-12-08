@@ -9,8 +9,7 @@ const TAB_IDS = {
         },
     },
     'options': {
-        html() {
-        },
+        html() {  },
     },
     'auto': {
         html() { updateAutomationHTML() },
@@ -27,7 +26,13 @@ const TAB_IDS = {
         html() { updateResearchHTML() },
 
         notify() {
+            let tier = 0
+            if (isAutoEnabled('sing_research')) tier = 2;
+            else if (isAutoEnabled('research')) tier = 1;
+
             for (let [i,x] of Object.entries(RESEARCH)) {
+                if (x.tier <= tier) continue;
+
                 var max = x.max ?? 1, amt = player.research[i]
 
                 if (!x.unl() || amt.gte(max)) continue
@@ -66,8 +71,8 @@ const TAB_IDS = {
         html() { updateCoreHTML() },
 
         notify() {
-            if (isAutoEnabled('core_reactor')) return false
-            for (let i = 0; i < tmp.core_reactor_unl; i++) {
+            let a = isAutoEnabled('core_reactor')
+            for (let i = 0; i < tmp.core_reactor_unl; i++) if (!a || !hasResearch('m10') && i >= 8) {
                 if (CORE_REACTOR[i].resource.gte(getCoreReactorCost(i))) return true
             }
             return false
@@ -98,14 +103,26 @@ const TAB_IDS = {
         html() { updateEvolutionTreeHTML() },
 
         notify() {
-            for (let i = 0; i < EVOLUTION_TREE.faith_cost.length; i++) {
+            if (!isAutoEnabled('faith')) for (let i = 0; i < EVOLUTION_TREE.faith_cost.length; i++) {
                 var x = EVOLUTION_TREE.faith_cost[i]
                 if (CURRENCIES[x[0]].amount.gte(x[1](player.humanoid.faith[i]))) return true
             }
 
-            var row_available = []
-            for (let i = 0; i < tmp.evo_tree_rows; i++) row_available.push(EVOLUTION_TREE.getAvilableSlot(i))
-            for (let i = 0; i < tmp.evo_tree_rows * 4; i++) if (EVOLUTION_TREE.canAfford(i, row_available[Math.floor(i / 4)])) return true
+            if (isAutoEnabled('evolution_tree')) return false;
+
+            var row_available = [], charged_row_available = [], tf_unl = isSSObserved('mars'), maxed_row = []
+            for (let i = 0; i < tmp.evo_tree_rows; i++) {
+                row_available.push(EVOLUTION_TREE.getAvilableSlot(i))
+                if (tf_unl) {
+                    charged_row_available.push(EVOLUTION_TREE.getAvilableSlot(i,true))
+                    if (hasEvolutionTree(4*i) && hasEvolutionTree(4*i+1) && hasEvolutionTree(4*i+2) && hasEvolutionTree(4*i+3)) maxed_row[i] = true;
+                }
+            }
+            for (let i = 0; i < tmp.evo_tree_rows * 4; i++) {
+                let row = Math.floor(i / 4)
+                if (EVOLUTION_TREE.canAfford(i, row_available[row])) return true;
+                if (tf_unl && row < EVOLUTION_TREE.charged_rows && maxed_row[row] && EVOLUTION_TREE.canAfford(i, charged_row_available[row], true)) return true;
+            }
 
             return false
         },
@@ -117,7 +134,7 @@ const TAB_IDS = {
         html() { updateCultivationHTML() },
 
         notify() {
-            return CURRENCIES.stone.amount.gte(MINING_TIER.require)
+            return !isAutoEnabled('mining_tier') && CURRENCIES.stone.amount.gte(MINING_TIER.require) || !isAutoEnabled('mining_ascend') && isSSObserved('moon') && player.humanoid.mining_tier.gte(MINING_TIER.ascend_require)
         },
     },
     'forge': {
@@ -130,24 +147,102 @@ const TAB_IDS = {
         },
     },
     'particle-accel': {
-        html() { pdatePAHtml() },
+        html() { updatePAHtml() },
+    },
+    'black-hole': {
+        html() { updateBlackHoleHTML() },
+
+        notify() {
+            if (isAutoEnabled('remnant')) return false;
+            let r = player.singularity.remnants
+            for (let i in REMNANT_UPGS) {
+                let u = REMNANT_UPGS[i]
+                if (u.unl() && r.gte(u.cost(player.singularity.upgs[i]))) return true;
+            }
+            return false
+        },
+    },
+    'singularity-milestones': {
+        html() { updateSingularityMilestones() },
+    },
+    'solar-system': {
+        html() { updateSolarSystemHTML() },
+
+        notify() {
+            if (isAutoEnabled('rocket_part')) return false;
+
+            for (let i = 0; i < ROCKET_PARTS.costs.length; i++) {
+                var x = ROCKET_PARTS.costs[i]
+                if (x[0]().gte(x[2](player.solar_system.rocket_parts[i]))) return true
+            }
+        },
+    },
+    'space-base': {
+        html() { updateSpaceBaseHTML() },
+
+        notify() {
+            if (tmp.ss_difficulty===0) return false;
+            if (player.solar_system.observ.gte(EXPERIMENT_TIER.require)) return true;
+            for (let g_id in SPACEBASE_UPGS_GROUPS) {
+                if (!SPACEBASE_UPGS_GROUPS_AUTO[g_id]?.()) for (let i of SPACEBASE_UPGS_GROUPS[g_id]) {
+                    let u = SPACEBASE_UPGS[i]
+                    if (u && u.unl() && tmp.ss_difficulty >= u.diff && CURRENCIES[u.res].amount.gte(u.cost(player.solar_system.sb_upgs[i]))) return true;
+                }
+            }
+        },
+    },
+    'constellation': {
+        html() { updateConstellationHTML() },
+
+        notify() {
+            return !hasResearch('h5') && CONSTELLATION.base.gte(CONSTELLATION.require);
+        },
+    },
+    'hadron-su': {
+        html() { updateStarterUpgradesHTML() },
+
+        notify() {
+            let len = player.hadron.starter_upgs.length
+            return len < STARTER_UPGRADES_LENGTH && player.hadron.amount.gte(2 ** len)
+        },
+    },
+    'shark-tier': {
+        html() { updateSharkTierHTML() },
+    },
+    'nucleobase': {
+        html() { updateNucleobasesHTML() },
+
+        notify() {
+            for (let id in NUCLEOBASES.ctn) {
+                let n = NUCLEOBASES.ctn[id], unl = n.unl(), upg = player.hadron.nucleobases[id].upg;
+
+                if (unl && (CURRENCIES[n.base.currency].amount.gte(NUCLEOBASES.get_cost(id,'base',upg[0])) || player.hadron.amount.gte(NUCLEOBASES.get_cost(id,'tier',upg[1])))) return true;
+            }
+            return false
+        },
     },
 }
 
 const TABS = [
-    {
+    { // 0
         stab: "shark",
     },{
         stab: "options",
     },{
-        unl: ()=>player.feature>=2,
+        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
         stab: "auto",
     },{
         unl: ()=>player.feature>=3,
         stab: "research",
-    },{
-        unl: ()=>player.feature>=4,
+    },{ // 5
+        unl: ()=>!tmp.ss_difficulty && player.feature>=4,
         stab: "explore",
+    },{
+        unl: ()=>tmp.ss_difficulty,
+        stab: "space-base",
+        style: {
+            "background": `#006c9e`,
+        },
     },{
         id: 'core',
         unl: ()=>player.core.times>0,
@@ -167,8 +262,42 @@ const TABS = [
             ["forge",()=>player.feature>=15],
             ["particle-accel",()=>player.feature>=16],
         ],
+    },{
+        id: 'singularity',
+        unl: ()=>player.singularity.first,
+        stab: [
+            ["black-hole"],
+            ["singularity-milestones"],
+            ["solar-system",()=>player.feature>=20],
+            ["constellation",()=>isSSObserved('neptune')],
+        ],
+        style: {
+            "background": `black url('textures/cosmic-pattern.png')`,
+            "color": "white",
+            "animation": `cosmic-pattern 20s linear infinite`,
+        },
+    },{ // 10
+        id: 'hadron',
+        unl: ()=>player.hadron.times,
+        stab: [
+            ["hadron-su"],
+            ["shark-tier",()=>player.hadron.starter_upgs.includes(0)],
+            ['nucleobase',()=>player.feature>=22],
+        ],
+        style: {
+            "background": `#ff8 repeating-conic-gradient(#0000 0 25%, #f802 0 50%)`,
+            "backgroundSize": "200px 200px",
+            "animation": `cosmic-pattern 20s linear infinite`,
+        },
     },
 ]
+
+const DEFAULT_TAB_STYLE = {
+    "background": "lightseagreen",
+    "backgroundSize": 'initial',
+    "color": "black",
+    "animation": "none",
+}
 
 function switchTab(t,st) {
     tab = t
@@ -223,6 +352,9 @@ function updateTabs() {
 
         if (unl) v.html?.()
     }
+
+    let s = TABS[tab]?.style ?? {}
+    for (let [k,v] of Object.entries(DEFAULT_TAB_STYLE)) document.body.style[k] = s[k] ?? v
 }
 
 function setupTabs() {

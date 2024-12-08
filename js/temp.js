@@ -15,6 +15,9 @@ function reloadTemp() {
         shark_elo: E(0),
         shark_rank_bonus: {},
 
+        shark_iq: E(0),
+        shark_tier_bonus: {},
+
         research_eff: {},
 
         su_el: {},
@@ -35,6 +38,7 @@ function reloadTemp() {
         ca_building_strength: [],
 
         evolution_tree_effect: [],
+        charged_et_effect: [],
 
         mining_fortune: E(0),
         ore_spawn_base: 1,
@@ -51,18 +55,57 @@ function reloadTemp() {
         shark_op_start: E('ee40'),
 
         particle_accel_eff: [],
+
+        scalings: {},
+
+        bh_pause: false,
+
+        bh_reduction: E(1),
+        remnant_upg_effects: [],
+
+        ss_difficulty: 0,
+        sb_upg_effects: {},
+        experiment_boosts: [],
+
+        constellation_boosts: [],
+
+        nucleobases: {},
     }
 
     for (let x in EXPLORE) {
         tmp.explore_mil_reached[x] = []
         tmp.explore_upg_boost[x] = [E(1),E(1)]
     }
+
+    for (let x in SCALINGS) {
+        tmp.scalings[x] = []
+        for (let y in SCALINGS[x].base) {
+            let b = []
+            for (let z of SCALINGS[x].base[y]) b.push(z)
+            tmp.scalings[x].push(b)
+        }
+    }
+
+    for (let x in NUCLEOBASES.ctn) {
+        tmp.nucleobases[x] = {
+            tier: E(0),
+            exp_gain: E(0),
+            effect: [],
+        }
+    }
 }
 
 function updateTemp() {
+    tmp.ss_difficulty = SOLAR_SYSTEM[player.solar_system.active]?.difficulty ?? 0 
     tmp.cr_active = player.core.radiation.active
 
+    tmp.fish_cap = SHARK.fish_cap
+
     updateResearchTemp()
+    updateScalingsTemp()
+    updateHadronTemp()
+    updateConstellationTemp()
+    updateSingularityTemp()
     updatePATemp()
     updateEvolutionTreeTemp()
     updateCoreTemp()
@@ -75,7 +118,7 @@ function updateTemp() {
 
     for (let [i,v] of Object.entries(CURRENCIES)) tmp.currency_gain[i] = preventNaNDecimal(v.gain??E(0))
 
-    reloadOres()
+    reloadOres();
 }
 
 function updateOptions() {

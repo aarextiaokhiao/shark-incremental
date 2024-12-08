@@ -34,6 +34,27 @@ const TOP_CURR = [
         curr: "humanoid",
         req: ()=>player.fish.gte(CURRENCIES.humanoid.require),
     },
+    {
+        unl: ()=>player.feature >= 18 && !tmp.ss_difficulty,
+        reset: "sacrifice",
+        curr: "dark-matter",
+        req: ()=>player.fish.gte(CURRENCIES['dark-matter'].require) && player.singularity.bh.gte(8),
+    },
+    {
+        unl: ()=>tmp.ss_difficulty >= 2,
+        curr: "reserv",
+        req: ()=>player.solar_system.observ.gte(CURRENCIES.reserv.require),
+    },
+    {
+        unl: ()=>tmp.ss_difficulty >= 4,
+        curr: "traject",
+        req: ()=>player.solar_system.reserv.gte(CURRENCIES.traject.require),
+    },
+    {
+        unl: ()=>player.hadron.times > 0 || isSSObserved('sun'),
+        curr: "hadron",
+        req: ()=>player.fish.gte(CURRENCIES.hadron.require),
+    },
 ]
 
 const PROGRESS = [
@@ -107,15 +128,51 @@ const PROGRESS = [
         auto: true,
         get amount() { return player.humanoid.mining_tier },
         require: 34,
+    },{
+        get auto() { return player.singularity.first },
+        cond_text: true,
+        get amount() { return player.humanoid.particle_accel.percent.reduce((x,y)=>Decimal.add(x,y)) },
+        require: 6,
+    },{
+        auto: true,
+        get amount() { return player.singularity.best_bh },
+        require: 8,
+    },{
+        cond_text: true,
+        get amount() { return CURRENCIES.fish.total },
+        require: 'ee10000',
+        logHeight: 2,
+    },{
+        auto: true,
+        get amount() { return CURRENCIES["dark-matter"].total },
+        require: 1e12,
+        logHeight: 1,
+    },{
+        cond_text: true,
+        get amount() { return CURRENCIES.fish.total },
+        require: 'ee9e15',
+        logHeight: 3,
+    },{
+        auto: true,
+        get amount() { return CURRENCIES.hadron.total },
+        require: 10,
+    },{
+        auto: true,
+        get amount() { return CURRENCIES.hadron.total },
+        require: '1e1000',
+        logHeight: 2,
     },
 ]
 
 function increaseFeature(v) {
-    if (player.feature == v-1) player.feature++
+    if (player.feature == v-1) player.feature++;
 }
 
 const CONFIRMATIONS = {
     prestige: [()=>player.prestige.times>0],
     core: [()=>player.core.times>0],
     humanoid: [()=>player.humanoid.times>0],
+    'black-hole': [()=>player.singularity.first],
+    sacrifice: [()=>player.singularity.sac_times>0],
+    hadron: [()=>player.hadron.times>0],
 }

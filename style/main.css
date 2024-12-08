@@ -13,7 +13,7 @@
 body {
     margin: 0px 10px;
     font-size: 16px;
-    background-color: lightseagreen;
+    background: lightseagreen;
     overflow-x: hidden;
 }
 
@@ -116,7 +116,7 @@ button * {
 	pointer-events: none;
 }
 
-button:not(.locked,.bought,.selected,#wipe,.ca-grid-btn,:active,.evolution-goal-ctn):hover {
+button:not(.pre-charged,.locked,.bought,.selected,#wipe,.ca-grid-btn,:active,.evolution-goal-ctn,#black-hole-button,.remnant-upg,.small-upg):hover {
 	background-color: #0b6965;
 	border-color: #043f3c;
 }
@@ -137,7 +137,7 @@ button.half-huge-btn {
 }
 
 .tab-button.selected,
-button:not(.locked,.bought,.ca-grid-btn,.evolution-goal-ctn):active {
+button:not(.pre-charged,.locked,.bought,.ca-grid-btn,.evolution-goal-ctn,#black-hole-button,.remnant-upg,.small-upg):active {
 	background-color: #075551;
 }
 
@@ -154,17 +154,22 @@ input.no-arrows {
 	}
 }
 
-.locked {
+li {
+	text-align: left;
+}
+
+.locked, .bought, .required {
+	cursor: default;
+}
+:not(.remnant-upg,.small-upg,.bought).locked {
 	background-color: #043d3a;
 	border-color: #02302d;
-	cursor: default;
 	color: #f44;
 }
 
 .bought {
 	background-color: #11853e;
 	border: solid 2px #07552e;
-	cursor: default;
 	color: #8f8;
 }
 
@@ -185,6 +190,15 @@ input.no-arrows {
 .tab-button.notify,
 .forge-btn.notify {
 	box-shadow: 0px 0px 3px 3px #f44;
+}
+
+#main-background {
+	position: absolute;
+	top: -10px; left: -10px;
+	width: calc(100% + 20px);
+	height: calc(100% + 10px);
+	background: linear-gradient(0deg, transparent 0px, lightseagreen 80px);
+	z-index: -1;
 }
 
 #tabs {
@@ -279,7 +293,7 @@ input.no-arrows {
 
 #currs-top {
 	margin: 10px 0px;
-	min-height: 100px;
+	min-height: 120px;
 	display: flex;
 	justify-content: space-evenly;
 	flex-flow: row wrap;
@@ -298,7 +312,7 @@ input.no-arrows {
 
 .curr-top > button {
 	width: calc(100% - 80px);
-	height: calc(100% - 36px);
+	height: 70px;
 	font-size: 12px;
 }
 
@@ -384,7 +398,7 @@ input.no-arrows {
 	width: calc(100% - 20px);
 }
 
-#feature-progress {
+#feature-progress, #constellation-progress {
 	position: relative;
 	margin-top: 5px;
 	width: calc(100% - 4px);
@@ -403,8 +417,11 @@ input.no-arrows {
 	height: 100%;
 	background-color: green;
 }
+#fp-bar.observ {
+	background: repeating-linear-gradient(-45deg, cyan, #00aeff 20px, cyan 40px);
+}
 
-#fp-text {
+.p-text, #fp-text {
 	position: absolute;
 	top: 50%;
 	width: 100%;
@@ -694,7 +711,7 @@ subtitle {
 #evolution-tree {
 	display: grid;
 	grid-template-columns: repeat(5, 150px);
-	grid-auto-rows: 150px;
+	grid-auto-rows: auto;
 	justify-content: center;
 }
 
@@ -715,6 +732,27 @@ subtitle {
 	margin: 2px;
 	padding: 25px 4px;
 	font-size: 12px;
+	min-height: 150px;
+}
+
+.evolution-tree-btn .line {
+	border-color: black;
+}
+
+.evolution-tree-btn.pre-charged:not(.locked,.charged) {
+	border-color: #00ac95;
+	background-color: #00ffea;
+	color: black;
+	box-shadow: 0px 0px 10px cyan;
+	cursor: pointer;
+}
+
+.evolution-tree-btn.pre-charged:not(.locked):hover,
+.evolution-tree-btn.charged {
+	border-color: #0089ac;
+	background-color: #00aeff;
+	box-shadow: 0px 0px 10px #0011ff;
+	color: black;
 }
 
 .etb-name, .etb-cost {
@@ -882,4 +920,281 @@ subtitle {
 	transform: translateY(-50%);
 	color: white;
 	filter: drop-shadow(1px 1px 0px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black);
+}
+
+#scalings-table {
+	border: solid 1px black;
+	table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 1px;
+}
+
+#scalings-table td, #scalings-table th {
+	border: solid 1px black;
+	min-width: 200px;
+	min-height: 50px;
+	height: 50px;
+	font-size: 14px;
+}
+
+#scalings-table td {
+	background-color: #0002;
+}
+
+#scalings-table th {
+	background-color: #0006;
+}
+
+#black-hole-button {
+	width: 350px;
+	height: 350px;
+	border-radius: 50%;
+	font-size: 20px;
+
+	border: solid 4px #b465ff;
+	background-color: #18002e;
+
+	animation: black-hole-glow 3s infinite ease-in-out;
+}
+
+@keyframes black-hole-glow {
+	from, to {
+		box-shadow: inset 0px 0px 10px #b465ff;
+	}
+	50% {
+		box-shadow: inset 0px 0px 40px #b465ff;
+	}
+}
+
+#black-hole {
+	position: fixed;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	width: 0px; height: 0px;
+	content: "";
+
+	border-radius: 50%;
+	background-color: black;
+
+	transition: width linear, height linear;
+	transition-duration: 5s;
+
+	z-index: 1;
+}
+
+#title-center {
+	position: fixed;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+
+	font-size: 3vw;
+	color: white;
+
+	pointer-events: none;
+	opacity: 0;
+
+	transition: opacity linear 5s;
+
+	z-index: 1;
+}
+
+@keyframes cosmic-pattern {
+	from {
+		background-position: 0px 0px;
+	}
+
+	to {
+		background-position: -600px 200px;
+	}
+}
+
+#singularity-milestones {
+	display: grid;
+	grid-template-columns: repeat(4, 300px);
+	grid-auto-rows: auto;
+	justify-content: center;
+	gap: 5px;
+}
+
+.singularity-milestone {
+	border: solid 2px white;
+	background-color: #0004;
+	border-radius: 20px;
+	min-height: 150px;
+	padding: 5px 10px;
+}
+
+#remnant-upgs, .spacebase-upgs {
+	display: grid;
+	grid-template-columns: repeat(4, 120px);
+	grid-auto-rows: auto;
+	justify-content: center;
+}
+
+.remnant-upg, .small-upg {
+	padding: 3px;
+	border: solid 2px magenta;
+	background-color: #0004;
+	min-height: 120px;
+	font-size: 11px;
+}
+.small-upg {
+	border-color: white;
+}
+.remnant-upg.locked, .small-upg.locked {
+	border: solid 2px red;
+}
+
+#solar-system {
+	display: grid;
+	grid-template-columns: repeat(2, 100px);
+	grid-auto-rows: auto;
+	justify-content: center;
+}
+#solar-system > button {
+	font-size: 12px;
+	padding: 0px;
+	min-height: 80px;
+}
+#solar-system > button.bought {
+	cursor: pointer;
+}
+
+#rocket-part-btns {
+	display: grid;
+	grid-template-columns: repeat(3, 120px);
+	grid-auto-rows: auto;
+	justify-content: center;
+}
+
+#observ-button {
+	font-size: 16px;
+	min-width: 300px;
+	padding: 5px 10px;
+}
+
+.sb-upg-req {
+	color: red;
+	font-weight: bold;
+	text-shadow: 1px 1px 0px black, 1px 1px 1px black;
+}
+.small-upg.required .sb-upg-desc, .small-upg:not(.required) .sb-upg-req {
+	display: none;
+}
+.small-upg.required .sb-upg-req, .small-upg:not(.required) .sb-upg-desc {
+	display: block;
+}
+
+#mining-tier-btn, #mining-ascend-btn {
+	height: auto;
+	min-height: 150px;
+}
+
+#cp-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 0%;
+	height: 100%;
+	background: repeating-linear-gradient(90deg, #c5fff7, #edff9e 20px, #c5fff7 40px);
+}
+
+.constellation-boost {
+	border: solid 2px white;
+	background-color: #0004;
+	border-radius: 20px;
+	min-height: 120px;
+	padding: 5px 10px;
+
+	width: 240px;
+	font-size: 14px;
+}
+
+#hadron-cutscene {
+	pointer-events: none;
+	position: fixed;
+	top: 0px; left: 0px;
+	width: 100%; height: 100%;
+	opacity: 0;
+	content: "";
+
+	background: #ff8 repeating-conic-gradient(#0000 0 25%, #f802 0 50%);
+	background-size: 200px 200px;
+	animation: cosmic-pattern 20s linear infinite;
+
+	transition: opacity linear;
+	transition-duration: 5s;
+
+	z-index: 1;
+}
+
+#hadron-cutscene > text-style {
+	position: absolute;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 3vw;
+	color: white;
+	opacity: 0;
+
+	transition: opacity linear;
+	transition-duration: 5s;
+}
+
+#starter-upgrades-table {
+	display: grid;
+	grid-template-columns: repeat(4, 240px);
+	grid-auto-rows: auto;
+	justify-content: center;
+}
+
+#starter-upgrades-table > button {
+	min-height: 160px;
+	font-size: 12px;
+}
+
+.starter-upg-title {
+	min-height: 30px;
+	font-weight: bold;
+}
+.starter-upg-desc {
+	min-height: 90px;
+}
+
+.nucleobase-div {
+	width: calc(100% - 14px);
+	min-height: 240px;
+
+	display: flex;
+	justify-content: start;
+    flex-flow: row wrap;
+
+	border-left: solid 2px #0008;
+	border-right: solid 2px #0008;
+
+	padding: 20px 5px;
+
+	background: linear-gradient(0deg, transparent 0px, #0004 40px, #0004 calc(100% - 80px), transparent);
+}
+.nucleobase-div > div {
+	position: relative;
+	margin: 0px 5px;
+	min-height: 240px;
+}
+.nucleobase-div div {
+	text-align: left;
+}
+
+.nucleobase-name {
+	min-width: 200px;
+}
+.nucleobase-name > img {
+	position: absolute;
+	top: 40px;
+	left: 0px;
+	width: 200px;
+}
+
+.nucleobase-exp {
+	width: 500px;
 }

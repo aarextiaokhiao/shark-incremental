@@ -8,8 +8,9 @@ function updateHTML() {
 
     var f = CURRENCIES.fish.amount, ff = []
 
-    if (f.gte(tmp.shark_op_start)) ff.push(icon("biohazard"))
-    if (tmp.cr_active) ff.push(icon("radioactive"))
+    if (f.gte(tmp.fish_cap)) ff.push(icon("benzene"));
+    if (f.gte(tmp.shark_op_start)) ff.push(icon("biohazard"));
+    if (tmp.cr_active) ff.push(icon("radioactive"));
 
     el('fish-amount').innerHTML = f.format(0) + (ff.length > 0 ? " " + ff.join("") : "")
     el('fish-gain').textContent = tmp.currency_gain.fish.gt(0) ? CURRENCIES.fish.amount.formatGain(tmp.currency_gain.fish) : ""
@@ -30,6 +31,9 @@ function setupHTML() {
     setupEvolutionHTML()
     setupForgeHTML()
     setupPAHtml()
+    setupSingularityHTML()
+    setupSpaceBaseHTML()
+    setupHadronHTML()
 
     let text = lang_text("option-buttons-text")
     el('option-buttons').innerHTML = `
@@ -51,7 +55,7 @@ function setupTopCurrenciesHTML() {
     for (let [i,x] of Object.entries(TOP_CURR)) {
         h += `
         <div class="curr-top" id="curr-top-${i}-div">
-            <div id="curr-top-${i}-amt1"><span id="curr-top-${i}-amt2">???</span> ${CURRENCIES[x.curr].costName}</div><button onclick="doReset('${x.curr}')" id="curr-top-${i}-btn">Reset</button>
+            <div id="curr-top-${i}-amt1"><span id="curr-top-${i}-amt2">???</span> ${CURRENCIES[x.curr].costName}</div><button onclick="doReset('${x.reset ?? x.curr}')" id="curr-top-${i}-btn">Reset</button>
         </div>
         `
     }
@@ -77,13 +81,25 @@ function updateTopCurrenciesHTML() {
 function updateProgressHTML() {
     let f = player.feature
     let p = PROGRESS[f]
-    
-    if (p) {
-        let l = p.logHeight??0, m = Decimal.pow(10,l-1)
-        let percent = ( l > 0 ? p.amount.max(m).iteratedlog(10,l).div(Decimal.max(p.require,m).iteratedlog(10,l)) : p.amount.div(p.require) ).max(0).min(1).toNumber()
-        let cond = !p.auto && p.amount.gte(p.require)
 
-        el('fp-text').innerHTML = cond && p.cond_text ? lang_text('progress-'+f+'-cond-text') : lang_text('progress-'+f+'-text',p.require) + " ("+formatPercent(percent,3)+")"
+    el('fp-bar').className = tmp.ss_difficulty ? "observ" : ""
+    
+    if (p || tmp.ss_difficulty) {
+        let l = 0, m = Decimal.pow(10,l-1), amount, req, auto = false, cond_text = "???", progress_text = "???";
+
+        if (tmp.ss_difficulty) {
+            let ss = SOLAR_SYSTEM[player.solar_system.active]
+
+            amount = CURRENCIES.observ.total, req = ss.goal, l = 1, cond_text = lang_text('observ-cond'), progress_text = lang_text('observ-progress',format(req,0));
+        } else {
+            amount = p.amount, req = p.require, auto = p.auto, l = p.logHeight??0, cond_text = lang_text('progress-'+f+'-cond-text'), progress_text = lang_text('progress-'+f+'-text',req);
+        }
+        
+        let percent = ( l > 0 ? amount.max(m).iteratedlog(10,l).div(Decimal.max(req,m).iteratedlog(10,l)) : amount.div(req) ).max(0).min(1).toNumber()
+        if (isNaN(percent)) percent = 0;
+        let cond = !auto && amount.gte(req)
+
+        el('fp-text').innerHTML = cond && (tmp.ss_difficulty || p.cond_text) ? cond_text : progress_text + " ("+formatPercent(percent,3)+")"
         el('fp-bar').style.width = percent*100+"%"
         el('fp-bar').style.animation = cond ? "cond-bar 1s infinite" : "none"
     } else {

@@ -1,4 +1,4 @@
-const VERSION = 1
+const VERSION = 2
 const SAVE_ID = "shark_inc_save"
 var prevSave = "", autosave
 
@@ -8,6 +8,7 @@ function getPlayerData() {
         total_fish: E(0),
         shark_level: E(0),
         shark_rank: E(0),
+        shark_tier: E(0),
         shark_upg: {},
 
         prestige: {
@@ -54,10 +55,12 @@ function getPlayerData() {
             faith: [E(0), E(0), E(0)],
             tree: [],
             tree_preset: [],
+            transform: false,
 
             goal: [],
 
             mining_tier: E(0),
+            mining_ascend: E(0),
             ores: {},
 
             forge: {
@@ -72,6 +75,47 @@ function getPlayerData() {
             },
         },
 
+        singularity: {
+            first: false,
+            bh: E(0),
+            best_bh: E(0),
+            remnants: E(0),
+            upgs: [],
+
+            dm: E(0),
+            total_dm: E(0),
+            sac_times: 0,
+
+            bh_tier: E(0),
+            constellation_res: [],
+        },
+
+        solar_system: {
+            rocket_parts: [E(0), E(0), E(0)],
+
+            active: "",
+            completion: {},
+            evo_save: [[],[E(0), E(0), E(0)]],
+
+            observ: E(0),
+            total_observ: E(0),
+
+            reserv: E(0),
+            traject: E(0),
+            experiment: E(0),
+
+            sb_upgs: {},
+        },
+
+        hadron: {
+            times: 0,
+            amount: E(0),
+            total: E(0),
+            starter_upgs: [],
+
+            nucleobases: {},
+        },
+
         radios: {},
 
         auto: {},
@@ -80,11 +124,13 @@ function getPlayerData() {
         latest_time: Date.now(),
 
         language: "EN",
+
+        VERSION: VERSION,
     }
 
-    for (let x in SHARK_UPGRADES) s.shark_upg[x] = E(0)
-    for (let x in AUTOMATION) s.auto[x] = [0,false]
-    for (let x in RESEARCH) s.research[x] = E(0)
+    for (let x in SHARK_UPGRADES) s.shark_upg[x] = E(0);
+    for (let x in AUTOMATION) s.auto[x] = [0,false];
+    for (let x in RESEARCH) s.research[x] = E(0);
     for (let x in EXPLORE) {
         s.explore.res[x] = s.explore.depth[x] = s.explore.base[x] = E(0)
         s.explore.upg[x] = [E(0), E(0)]
@@ -93,11 +139,18 @@ function getPlayerData() {
         s.core.reactor[x] = E(0)
         s.core.assembler_strength[x] = 0
     }
-    for (let x = 0; x < 16; x++) s.core.assembler[x] = -1
-    for (let x of ORE_KEYS) s.humanoid.ores[x] = E(0)
-    for (let x of FORGE_KEYS) s.humanoid.forge.level[x] = 0
-
-    for (let x in PARTICLE_ACCELERATOR) s.humanoid.particle_accel.percent[x] = E(0)
+    for (let x = 0; x < 16; x++) s.core.assembler[x] = -1;
+    for (let x of ORE_KEYS) s.humanoid.ores[x] = E(0);
+    for (let x of FORGE_KEYS) s.humanoid.forge.level[x] = 0;
+    for (let x in PARTICLE_ACCELERATOR) s.humanoid.particle_accel.percent[x] = E(0);
+    for (let x in REMNANT_UPGS) s.singularity.upgs[x] = E(0);
+    for (let x in SPACEBASE_UPGS) s.solar_system.sb_upgs[x] = E(0);
+    for (let x in CONSTELLATION.boosts) s.singularity.constellation_res[x] = E(0);
+    for (let x in NUCLEOBASES.ctn) s.hadron.nucleobases[x] = {
+        amount: E(0),
+        experience: E(0),
+        upg: [E(0), E(0)],
+    };
 
     return s
 }
@@ -107,7 +160,8 @@ function wipe(reload,start) {
     if (start) return
     setupOptions()
     reloadTemp()
-    tab = 0, stab = [0,0,0,0], tab_name = 'shark'
+    tab = 0, stab = stab.map(x=>0), tab_name = 'shark'
+    ores_grid = []
 	if (reload) {
         save()
         location.reload()
@@ -118,6 +172,18 @@ function loadPlayer(load) {
     const DATA = getPlayerData()
     player = deepNaN(load, DATA)
     player = deepUndefinedAndDecimal(player, DATA)
+
+    if (player.singularity.best_bh.gte(4)) player.humanoid.goal = [0,1,2,3,4,5,6,7,8];
+
+    checkVersion()
+}
+
+function checkVersion() {
+    if (player.VERSION < 2) {
+        player.humanoid.faith[2] = E(0)
+    }
+
+    player.VERSION = Math.max(player.VERSION, VERSION)
 }
 
 function clonePlayer(obj,data) {
@@ -160,7 +226,7 @@ function deepUndefinedAndDecimal(obj, data) {
     return obj
 }
 
-function preventSaving() { return offline.nosave }
+function preventSaving() { return tmp.bh_pause || offline.nosave }
 
 function save(auto=false) {
     if (auto && !player.radios.autosave) return
@@ -173,7 +239,7 @@ function save(auto=false) {
 }
 
 function load(x){
-    if(typeof x == "string" & x != ''){
+    if(typeof x == "string" && x != ''){
         loadPlayer(JSON.parse(atob(x)))
     } else {
         wipe(false,true)

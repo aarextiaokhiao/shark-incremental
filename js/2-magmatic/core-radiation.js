@@ -9,27 +9,44 @@ const CORE_RAD = {
 
     purchaseGeneration() {
         var r_c15 = hasResearch('c15'), active = tmp.cr_active
+        if (player.feature<7) return
         if (!r_c15 && !active) return
+
         let x = player.core.radiation.gen, amt = CURRENCIES.fish.amount.pow(!active && r_c15 ? researchEffect('c15',0) : 1)
         if (amt.gte(this.genCost(x))) player.core.radiation.gen = this.genBulk(amt).max(x.add(1))
     },
     genCost: l => Decimal.pow('e850', Decimal.pow(1.05, l)),
     genBulk: x => x.log('e850').log(1.05).floor().add(1),
-    genValue: l => Decimal.pow(2,l.sub(1)).mul(l),
+    genValue: l => {
+        let x = Decimal.pow(2,l.sub(1)).mul(l)
+        if (!tmp.ss_difficulty && hasResearch('dm6')) x = expPow(x,l.add(10).log10().root(2));
+        return x
+    },
 
-    gain() { return this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(tmp.explore_eff[4]??1).pow(getPAEffect(0)) },
+    gain() {
+        let m = tmp.explore_eff[4] ?? [1,1]
+
+        let x = this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(m[0])
+        
+        x = x.pow(getPAEffect(0)).pow(m[1]).pow(spaceBaseUpgEffect('o5')).pow(spaceBaseUpgEffect('r5')).pow(constellationBoostEffect(4,false))
+
+        if (!hasResearch('m9')) x = x.overflow('ee18',0.5);
+
+        x = expPow(x,getNucleobaseEffect('guanine',2));
+
+        return x
+    },
     limit() {
         let x = Decimal.mul(this.limitIncrease(),1e6).div(simpleResearchEffect("c6"))
         if (hasDepthMilestone(4,0)) x = x.div(1e3)
         return x
     },
     limitIncrease() {
-        let x = Decimal.pow(1e3,player.core.radiation.boost.scale(tmp.cr_scale2,2,'P').scale(tmp.cr_scale1,2,'P').pow(hasResearch('c12') ? 1.2 : 1.25))
-
-        return x
+        return Decimal.pow(1e3, player.core.radiation.boost.scaleAll("cr_boost").pow(hasResearch('c12') ? 1.2 : 1.25))
     },
 
     purchaseBoost() {
+        if (player.feature<7) return;
         var rad = player.core.radiation
         if (rad.amount.gte(this.limit())) {
             rad.boost = rad.boost.add(1).max(this.boostBulk())
@@ -50,7 +67,7 @@ const CORE_RAD = {
 
         if (hasDepthMilestone(4,0)) x = x.mul(1e3)
 
-        x = x.div(1e6).mul(simpleResearchEffect("c6")).log(1e3).root(hasResearch('c12') ? 1.2 : 1.25).scale(tmp.cr_scale1,2,'P',true).scale(tmp.cr_scale2,2,'P',true).floor().add(1)
+        x = x.div(1e6).mul(simpleResearchEffect("c6")).log(1e3).root(hasResearch('c12') ? 1.2 : 1.25).scaleAll("cr_boost",true).floor().add(1)
 
         return x
     },
@@ -58,77 +75,103 @@ const CORE_RAD = {
         {
             req: 0,
             effect: (r,b)=>{
-                let x = r.add(1).log10().mul(b.add(1)).root(2)
+                let x = r.add(1).log10().mul(b.add(1)).root(2).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 1,
             effect: (r,b)=>{
-                let x = expPow(r.add(1),1/3).pow(b.div(4).add(1))
+                let x = expPow(r.add(1),1/3).pow(b.div(4).add(1)).pow(getCRBoost(13)).overflow('eee9',0.5,2)
 
                 return x
             },
         },{
             req: 2,
             effect: (r,b)=>{
-                let x = r.add(1).log10().root(2).mul(b.add(1)).div(100).add(1)
+                let x = r.add(1).log10().root(2).mul(b.add(1)).div(100).add(1).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 9,
             effect: (r,b)=>{
-                let x = r.add(1).log10().root(2).mul(b.add(10))
+                let x = r.add(1).log10().root(2).mul(b.add(10)).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 13,
             effect: (r,b)=>{
-                let x = r.add(1).log10().mul(b.add(1).root(2)).softcap(250,3,3).div(5000)
+                let x = r.add(1).log10().mul(b.add(1).root(2)).softcap(250,3,3).div(5000).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 17,
             effect: (r,b)=>{
-                let x = r.add(10).log10().log10().mul(b.root(2).div(10).add(1)).add(1).root(2).mul(1.25)
+                let x = r.add(10).log10().log10().mul(b.root(2).div(10).add(1).min(1e3)).add(1).root(2).mul(1.25)
 
                 return x
             },
         },{
             req: 20,
             effect: (r,b)=>{
-                let x = r.add(1).log10().mul(b.add(1)).root(3).div(100).add(1)
+                let x = r.add(1).log10().mul(b.add(1)).root(3).div(100).add(1).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 25,
             effect: (r,b)=>{
-                let x = player.shark_level.add(1).pow(r.add(1).log10().mul(b.add(1)).root(2).div(100)).overflow(1e3,0.5)
+                let x = player.shark_level.add(1).pow(r.add(1).log10().mul(b.add(1)).root(2).div(100)).overflow(1e3,0.5).overflow('ee10',0.5,2).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 35,
             effect: (r,b)=>{
-                let x = r.add(1).log10().div(1e3).add(1).pow(b.add(1).root(2))
+                let x = r.add(1).log10().div(1e3).add(1).pow(b.add(1).root(2)).pow(getCRBoost(13))
 
                 return x
             },
         },{
             req: 45,
             effect: (r,b)=>{
-                let x = r.add(1).log10().mul(b.add(1)).add(1).log10().div(100).add(1)
+                let x = r.add(1).log10().mul(b.add(1)).add(1).log10()
 
-                return x
+                if (!hasResearch('s5',6)) x = x.div(100).add(1)
+                else x = x.pow(2)
+
+                return x.pow(getCRBoost(13))
             },
         },{
             req: 64,
             effect: (r,b)=>{
-                let x = r.add(1).log10().mul(b.add(1)).add(1).log10().add(1)
+                let x = r.add(1).log10().mul(b.add(1)).add(1).log10().add(1).pow(getCRBoost(13))
+
+                return x
+            },
+        },{
+            req: 1500,
+            effect: (r,b)=>{
+                let x = r.add(10).log10().log10().add(1).mul(b.add(10).log10()).pow(getCRBoost(13))
+
+                return x
+            },
+        },{
+            req: 2000,
+            effect: (r,b)=>{
+                let x = r.add(10).log10().overflow(1e300,0.5).pow(expPow(b.add(1),0.25).softcap(1e4,10,'log').div(10)).pow(getCRBoost(13))
+
+                return x
+            },
+        },{
+            req: 10000,
+            effect: (r,b)=>{
+                let x = r.add(10).log10().log10().add(1).log10().add(b.add(10).log10().log10()).div(10).add(1)
+
+                if (hasResearch('m8')) x = x.pow(2);
 
                 return x
             },
@@ -152,14 +195,16 @@ function getCoreTemperatureEffect() {
     if (x.gte(6150)) {
         x = x.sub(6050).div(100).root(2)
 
-        return x.softcap(10,hasResearch('f4') ? 0.5 : 1/3,0)
-    } else return x.div(6150).max(0)
+        x = x.softcap(10,hasResearch('f4') ? 0.5 : 1/3,0,hasResearch('dm5'))
+    } else x = x.div(6150).max(0)
+
+    return x.mul(remnantUpgEffect(9))
 }
 
 function updateCoreRadiation() {
     var rad = player.core.radiation
 
-    el('radioactive-amount').innerHTML = rad.amount.format(0) + " / " + tmp.cr_limit.format(0) + " " + icon("radioactive")
+    el('radioactive-amount').innerHTML = rad.amount.format(0) + (rad.boost.gte(1e5) ? "" : " / " + tmp.cr_limit.format(0)) + " " + icon("radioactive")
     el('radioactive-gain').innerHTML = tmp.cr_gain.gt(0) ? rad.amount.formatGain(tmp.cr_gain) : ""
 
     el('start-cr-experiment').innerHTML = lang_text('cr-start',rad.active)
@@ -190,9 +235,6 @@ function updateCoreRadiation() {
 function updateCoreRadiationTemp() {
     tmp.cr_gain = CORE_RAD.gain()
     tmp.cr_limit = CORE_RAD.limit()
-
-    tmp.cr_scale1 = Decimal.add(10,researchEffect('m3',0))
-    tmp.cr_scale2 = Decimal.add(30,researchEffect('m3',0))
 
     var temp_eff = tmp.core_temp_eff = getCoreTemperatureEffect()
 

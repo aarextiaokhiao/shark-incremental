@@ -3,7 +3,7 @@ var auto_time = {}
 
 const AUTOMATION = {
     shark: {
-        unl: ()=>true,
+        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(3,x).mul(1e3),
@@ -16,7 +16,7 @@ const AUTOMATION = {
         },
     },
     su: {
-        unl: ()=>true,
+        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
         interval: [1,0.8],
 
         cost: x=>Decimal.pow(2,x).mul(1e3),
@@ -31,7 +31,7 @@ const AUTOMATION = {
         },
     },
     spu: {
-        unl: ()=>hasDepthMilestone(1,0),
+        unl: ()=>hasDepthMilestone(1,0) || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(1e5,x).mul(1e125),
@@ -46,7 +46,7 @@ const AUTOMATION = {
         },
     },
     eu: {
-        unl: ()=>player.core.times>0,
+        unl: ()=>player.core.times>0 || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(2,x).mul(100),
@@ -61,7 +61,7 @@ const AUTOMATION = {
         },
     },
     core_reactor: {
-        unl: ()=>player.humanoid.times>0,
+        unl: ()=>player.humanoid.times>0 || player.singularity.best_bh.gte(2),
         interval: [10,0.9],
 
         cost: x=>Decimal.pow(1e10,x+1),
@@ -70,11 +70,13 @@ const AUTOMATION = {
         curr: "core",
 
         trigger() {
-            for (let i=0; i<tmp.core_reactor_unl; i++) upgradeCoreReactor(i)
+            let l = tmp.core_reactor_unl
+            if (!hasResearch('m10')) l = Math.min(l,8);
+            for (let i=0; i<l; i++) upgradeCoreReactor(i);
         },
     },
     core_radiation: {
-        unl: ()=>player.humanoid.times>0,
+        unl: ()=>player.humanoid.times>0 || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(1e10,x+1),
@@ -87,7 +89,7 @@ const AUTOMATION = {
         },
     },
     radioactive_boosts: {
-        unl: ()=>hasEvolutionGoal(7),
+        unl: ()=>hasEvolutionGoal(7) || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(1e100,x+1),
@@ -100,7 +102,7 @@ const AUTOMATION = {
         },
     },
     mining_upgs: {
-        unl: ()=>hasForgeUpgrade('auto'),
+        unl: ()=>hasForgeUpgrade('auto') || player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(100,x+1).mul(1e70),
@@ -108,14 +110,18 @@ const AUTOMATION = {
 
         curr: "stone",
 
-        su: ['m1','m2','m3','m4','m5'],
+        get su() {
+            let x = ['m1','m2','m3','m4','m5']
+            if (hasResearch('m11')) x.push('m6','m7','m8','m9');
+            return x
+        },
 
         trigger() {
             buyAllSharkUpgrades(this.su)
         },
     },
     humanoid: {
-        unl: ()=>hasForgeUpgrade('auto',2),
+        unl: ()=>!isSSObserved('venus') && (hasForgeUpgrade('auto',2) || player.singularity.best_bh.gte(2)),
         interval: [10,0.9],
 
         cost: x=>Decimal.pow(10,x+1).mul(1e2),
@@ -124,7 +130,124 @@ const AUTOMATION = {
         curr: "obsidian",
 
         trigger() {
-            CURRENCIES.humanoid.amount = CURRENCIES.humanoid.amount.add(tmp.currency_gain.humanoid)
+            let g = tmp.currency_gain.humanoid
+            CURRENCIES.humanoid.amount = CURRENCIES.humanoid.amount.add(g)
+            if (g.gt(0)) {
+                increaseFeature(11)
+                player.humanoid.times++
+            }
+        },
+    },
+    research: {
+        unl: ()=>player.singularity.best_bh.gte(5),
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(1e3,x+1).mul(1e6),
+        bulk: x=>x.div(1e6).log(1e3).floor(),
+
+        curr: "remnants",
+
+        trigger() {
+            for (let i of PRE_BH_RESEARCH) {
+                let r = RESEARCH[i], max = r.max??1
+
+                purchaseResearch(i, !r.noBuyMax && max > 1)
+            }
+        },
+    },
+    mining_tier: {
+        unl: ()=>player.singularity.best_bh.gte(5),
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(1e3,x+1).mul(1e15),
+        bulk: x=>x.div(1e15).log(1e3).floor(),
+
+        curr: "remnants",
+
+        trigger() {
+            MINING_TIER.upgrade(true)
+        },
+    },
+    remnant: {
+        unl: ()=>hasSMilestone(10),
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(1e6,x+1).mul(1e60),
+        bulk: x=>x.div(1e60).log(1e6).floor(),
+
+        curr: "remnants",
+
+        trigger() {
+            for (let i = 0; i < REMNANT_UPGS.length; i++) buyRemnantUpg(i);
+        },
+    },
+    faith: {
+        unl: ()=>isSSObserved('mars'),
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(1e3,x+1).mul(1e15),
+        bulk: x=>x.div(1e15).log(1e3).floor(),
+
+        curr: "dark-matter",
+
+        trigger() {
+            for (let i = 0; i < 3; i++) purchaseSharkoidFaith(i);
+        },
+    },
+    sing_research: {
+        unl: ()=>player.hadron.times,
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(10,x+1),
+        bulk: x=>x.log(10).floor(),
+
+        curr: "hadron",
+
+        trigger() {
+            for (let i of PRE_HADRON_RESEARCH) {
+                let r = RESEARCH[i], max = r.max??1
+
+                purchaseResearch(i, !r.noBuyMax && max > 1)
+            }
+        },
+    },
+    evolution_tree: {
+        unl: ()=>player.hadron.starter_upgs.includes(7),
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(10,x+1),
+        bulk: x=>x.log(10).floor(),
+
+        curr: "hadron",
+
+        trigger() {
+            for (let x = 0; x < EVOLUTION_TREE.rows * 4; x++) purchaseEvolutionTree(x);
+        },
+    },
+    rocket_part: {
+        unl: ()=>player.hadron.times,
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(10,x+1),
+        bulk: x=>x.log(10).floor(),
+
+        curr: "hadron",
+
+        trigger() {
+            for (let x = 0; x < 3; x++) ROCKET_PARTS.buy(x);
+        },
+    },
+    mining_ascend: {
+        unl: ()=>player.hadron.times,
+        interval: [1,0.9],
+
+        cost: x=>Decimal.pow(10,x+1),
+        bulk: x=>x.log(10).floor(),
+
+        curr: "hadron",
+
+        trigger() {
+            MINING_TIER.ascend(true)
         },
     },
 }
