@@ -938,14 +938,14 @@ subtitle {
 
 button.evolution,
 .evolution button:not(.bought, .pre-charged, .charged) {
-	background: rgb(30, 191, 63) !important;
+	background-color: rgb(30, 191, 63) !important;
 	border: solid 2px darkgreen !important;
 	&.locked {
-		background: rgb(0, 64, 0) !important;
+		background-color: rgb(0, 64, 0) !important;
 	}
 	&.selected,
 	&:not(.locked):hover {
-		background: rgb(15, 95, 31) !important;
+		background-color: rgb(15, 95, 31) !important;
 	}
 }
 

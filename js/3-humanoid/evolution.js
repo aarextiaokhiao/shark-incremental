@@ -198,6 +198,7 @@ function respecEvolutionTree(force,charged) {
     var f = ()=>{
         player.humanoid.tree = charged ? player.humanoid.tree.filter(x => !String(x).includes("C")) : []
         doReset("humanoid",true)
+        updateUnspentFaith()
     }
 
     if (!force && player.radios['confirm-humanoid']) createConfirmationPopup(lang_text("popup-desc")["evolution-tree-respec"],f)
