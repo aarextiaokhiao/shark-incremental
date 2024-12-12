@@ -229,11 +229,10 @@ const TABS = [
     },{
         stab: "options",
     },{
+        stab: "research",
+    },{
         unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
         stab: "auto",
-    },{
-        unl: ()=>player.feature>=3,
-        stab: "research",
     },{ // 5
         unl: ()=>!tmp.ss_difficulty && player.feature>=4,
         stab: "explore",

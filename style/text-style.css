@@ -13,6 +13,10 @@ text-style {
         color: #ffa500;
     };
 
+    &[text="pearl"] {
+        color: #def;
+    };
+
     &[text="shark"] {
         color: #93a3ac;
     };

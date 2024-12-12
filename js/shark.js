@@ -1,10 +1,10 @@
 const SHARK = {
-    cost(l=player.shark_level) { return Decimal.pow(tmp.shark_req_base,l.mul(tmp.shark_scale_str).scaleAll("shark_level")).root(coreReactorEffect(3)) },
-    bulk(x=player.fish) { return x.pow(coreReactorEffect(3)).log(tmp.shark_req_base).scaleAll("shark_level",true).div(tmp.shark_scale_str).floor().add(1) },
+    cost(l=player.shark_level) { return Decimal.pow(5,l) },
+    bulk(x=player.fish) { return x.log(5).floor().add(1) },
 
     bonuses: {
-        fish: [()=>player.shark_level.gte(1),l=>expPow(Decimal.pow(tmp.shark_base,l).mul(l),getCRBoost(5)),E(0)],
-        prestige: [()=>player.shark_level.gte(20),l=>Decimal.add(1.25,simpleResearchEffect('p1',0)).pow(l.sub(19)),E(1)],
+        fish: [()=>player.shark_level.gte(1),l=>l.max(hasResearch("p3") ? E(1.2).pow(l) : E(1)),E(0)],
+        pearl: [()=>player.shark_level.gt(11),l=>l.sub(11).div(100).max(0)],
         core: [()=>player.shark_level.gte(300),l=>Decimal.add(1.01,getCRBoost(4,0)).pow(l.sub(299)).overflow('ee3',0.5),E(1)],
         remnants: [()=>player.shark_level.gte(1)&&hasSMilestone(0),l=>{
             let x = l
@@ -102,45 +102,45 @@ const SHARK_UPGRADES = {
     s1: {
         req: ()=>player.shark_level.gte(3),
 
-        cost: l => Decimal.pow(1.1,l).mul(100),
-        bulk: x => x.div(100).log(1.1).floor().add(1),
+        cost: l => Decimal.pow(3,l).mul(25),
+        bulk: x => x.div(25).log(3).floor().add(1),
 
         curr: "fish",
 
-        effect: l=>l.add(1).pow(sharkUpgEffect('s3')),
-        effDesc: x=>formatMult(x),
+        effect: l=>l.add(1),
+        effDesc: x=>formatMult(x,0),
     },
     s2: {
-        req: ()=>player.shark_level.gte(7),
+        req: ()=>player.shark_level.gte(4),
 
-        cost: l => Decimal.pow(10,l.pow(1.25)).mul(1e6),
-        bulk: x => x.div(1e6).log(10).root(1.25).floor().add(1),
+        cost: l => Decimal.pow(2,l).mul(200),
+        bulk: x => x.div(200).log(2).floor().add(1),
 
         curr: "fish",
 
-        effect: l=>l,
-        effDesc: x=>"+"+format(x,0),
+        effect: l=>l.mul(2),
+        effDesc: x=>`+${format(x,0)}s worth of fish`,
     },
     s3: {
-        req: ()=>player.shark_level.gte(15),
+        req: ()=>player.shark_level.gte(5),
 
-        cost: l => {
-            let x = Decimal.pow(1e3,l.scaleAll("su_s3").pow(1.25)).mul(1e21)
-            if (hasResearch('c3')) x = x.root(coreReactorEffect(3))
-            return x
-        },
-        bulk: x => {
-            if (hasResearch('c3')) x = x.pow(coreReactorEffect(3))
-            return x.div(1e21).log(1e3).root(1.25).scaleAll("su_s3",true).floor().add(1)
-        },
+        cost: l => Decimal.pow(2,l).mul(2e3),
+        bulk: x => x.div(2e3).log(2).floor().add(1),
 
         curr: "fish",
 
-        effect: l=>l.div(2).add(1).pow(hasResearch('c7')?2.5:1),
-        effDesc: x=>formatPow(x),
+        effect: l=>{
+			let kg = l.add(2).mul(5)
+			let max = E(30).add(sharkUpgEffect('p2', 0)).add(sharkUpgEffect('p3', 0))
+			if (hasResearch('p2')) max = max.add(researchEffect('p2', 0))
+
+			let eff = E(1.1).pow(kg.min(max).sub(10))
+			return { kg, max, eff }
+		},
+        effDesc: x=>`${format(x.kg, 0)}kg / ${format(x.max, 0)}kg (${formatMult(x.eff)} to Fish)`,
     },
     s4: {
-        unl: ()=>hasResearch('p3'),
+        unl: ()=>player.feature>=1,
         req: ()=>player.shark_level.gte(38),
 
         cost: l => {
@@ -186,50 +186,35 @@ const SHARK_UPGRADES = {
     p1: {
         req: ()=>player.prestige.times>0,
 
-        cost: l => Decimal.pow(2,l.pow(1.1)).ceil(),
-        bulk: x => x.log(2).root(1.1).floor().add(1),
+        cost: l => E(2).pow(l),
+        bulk: x => x.log(2).floor().add(1),
 
         curr: "prestige",
 
-        effect: l=>{
-            let x = Decimal.pow(3,l.mul(simpleResearchEffect('p5')))
-            x = player.hadron.starter_upgs.includes(2) ? x.overflow('eee7',0.5,2) : x.min('eee7')
-            return x
-        },
+        effect: l=>l.add(1),
         effDesc: x=>formatMult(x,0),
     },
     p2: {
-        req: ()=>player.prestige.times>0,
+        unl: ()=>player.prestige.times>0,
 
-        cost: l => Decimal.pow(10,l.pow(Decimal.sub(1.25,researchEffect('p9',0)))).mul(1e3),
-        bulk: x => x.div(1e3).log(10).root(Decimal.sub(1.25,researchEffect('p9',0))).floor().add(1),
+        cost: l => E(2).pow(l).mul(2),
+        bulk: x => x.div(2).log(2).floor().add(1),
 
         curr: "prestige",
 
-        effect: l=>{
-            let x = Decimal.pow(player.fish.add(10).max(10).log10(),l)
-            x = player.hadron.starter_upgs.includes(2) ? x.overflow('eee7',0.5,2) : x.min('eee7')
-            return x
-        },
-        effDesc: x=>formatMult(x),
+        effect: l=>l.mul(researchEffect('p4', 0).add(5)),
+        effDesc: x=>"+"+format(x,0)+"kg",
     },
     p3: {
-        unl: ()=>hasResearch('p3'),
+        unl: ()=>player.prestige.times>0,
 
-        cost: l => {
-            let x = Decimal.pow(1e6,l.pow(2)).mul(1e33)
-            if (hasResearch('c3')) x = x.root(coreReactorEffect(3))
-            return x
-        },
-        bulk: x => {
-            if (hasResearch('c3')) x = x.pow(coreReactorEffect(3))
-            return x.div(1e33).log(1e6).root(2).floor().add(1)
-        },
+        cost: l => l.add(3).pow(3),
+        bulk: x => x.root(3).sub(3).floor().add(1),
 
-        curr: "prestige",
+        curr: "pearl",
 
-        effect: l=>l.mul(hasResearch("p6")?2:1),
-        effDesc: x=>"+"+format(x,0),
+        effect: l=>l.mul(3),
+        effDesc: x=>"+"+format(x,0)+"kg",
     },
 
     m1: {
@@ -436,7 +421,7 @@ function updateSharkTemp() {
 
     tmp.su_locked = l
 
-    tmp.su_el.fish = hasResearch('p2')
+    tmp.su_el.fish = false
     tmp.su_el.prestige = hasDepthMilestone(1,2)
 
     if (hasForgeUpgrade('auto')) {
@@ -459,13 +444,6 @@ function updateSharkTemp() {
         if (['p1','p2','p3'].includes(i)) lvl = lvl.mul(getCRBoost(6))
         tmp.shark_upg_eff[i] = v.effect(lvl)
     }
-
-    tmp.shark_base = sharkUpgEffect('s2').add(2)
-    tmp.shark_scale_str = inExploration(2) ? 10 : 1
-
-    tmp.shark_req_base = Decimal.sub(10,researchEffect('p3',0))
-
-    if (hasResearch('p8')) tmp.shark_req_base = tmp.shark_req_base.sub(1);
 
     let bonus_str = remnantUpgEffect(0)
 
@@ -494,6 +472,8 @@ function updateSharkHTML() {
     el('shark-button').className = el_classes({locked: player.fish.lt(cost)})
 
     el('shark-bonus').innerHTML = Object.keys(SHARK.bonuses).filter(x=>SHARK.bonuses[x][0]()).map(x=>lang_text("shark-bonus-"+x,getSharkBonus(x))).join(", ")
+
+    el('pearl-currency').innerHTML = player.feature >= 1 ? `You also have ${CURRENCIES.pearl.amount.format(2)} ${toTextStyle('Pearls','pearl')}.` : ""
 }
 
 function updateSharkUpgradesHTML() {

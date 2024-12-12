@@ -1,15 +1,4 @@
 const SCALINGS = {
-    shark_level: {
-        get amount() { return player.shark_level },
-
-        base: [
-            [10,2,"P"],
-            [100,3,"E2"],
-            [1e3,3,"P"],
-            [7.5e9,2,"D"],
-            ['1e1337',3,"D"],
-        ],
-    },
     shark_rank: {
         get amount() { return player.shark_rank },
 
@@ -25,13 +14,6 @@ const SCALINGS = {
 
         base: [
             [25,2,"P"],
-        ],
-    },
-    su_s3: {
-        get amount() { return player.shark_upg.s3 },
-
-        base: [
-            [30,3,"E2"],
         ],
     },
     su_s4: {
@@ -114,24 +96,12 @@ const SCALINGS = {
     },
 }
 
-const PRE_HADRON_SCALINGS = ['shark_level','shark_rank','su_s3','su_s4','su_m1','su_m3','su_m5','cr_boost','mining_tier','mining_ascend','remnant_upg','bh_tier']
+const PRE_HADRON_SCALINGS = ['shark_rank','su_s4','su_m1','su_m3','su_m5','cr_boost','mining_tier','mining_ascend','remnant_upg','bh_tier']
 
 function getScalingStarts(id) {
     let b = SCALINGS[id].base.map(x=>x[0])
 
     switch (id) {
-        case "shark_level": {
-            b[0] = Decimal.add(b[0],sharkUpgEffect('p3',0)).add(hasDepthMilestone(2,2)?player.explore.depth[2].div(500).overflow(1e6,0.5).floor():0)
-            b[1] = Decimal.add(b[1],getCRBoost(3,0)).add(simpleResearchEffect('c10',0))
-            b[2] = Decimal.mul(b[2],hasResearch('m2')?2:1).mul(forgeUpgradeEffect('shark'))
-
-            let r = remnantUpgEffect(6)
-            for (let i = 0; i < 3; i++) b[i] = Decimal.mul(b[i],r);
-
-            b[3] = Decimal.mul(b[3],remnantUpgEffect(10))
-
-            break
-        }
         case "shark_rank": {
             if (hasEvolutionGoal(8)) b[0] = 30
             if (isSSObserved('venus')) b[2] *= 2
@@ -169,10 +139,6 @@ function getScalingPowers(id) {
     let b = SCALINGS[id].base.map(x=>x[1])
 
     switch (id) {
-        case "su_s3": {
-            if (hasDepthMilestone(2,0)) b[0] = 2.75
-            break
-        }
         case "su_s4": {
             if (hasDepthMilestone(2,0)) b[0] = 2.75
             break

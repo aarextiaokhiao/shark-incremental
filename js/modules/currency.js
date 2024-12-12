@@ -7,9 +7,11 @@ const CURRENCIES = {
         set total(v) { player.total_fish = v.max(0) },
     
         get gain() {
-            let x = getSharkBonus("fish").mul(sharkUpgEffect('s1')).mul(sharkUpgEffect('p1')).mul(sharkUpgEffect('p2'))
-            .mul(tmp.explore_eff[0][0]).mul(tmp.core_bonus)
+            let x = getSharkBonus("fish").mul(sharkUpgEffect('s1')).mul(sharkUpgEffect('s3').eff)
+			x = x.mul(sharkUpgEffect('p1')).mul(tmp.explore_eff[0][0])
+			if (hasResearch("p1")) x = x.mul(2)
 
+			/*x = x.mul(tmp.core_bonus)
             x = x.pow(sharkUpgEffect('s4')).pow(tmp.explore_eff[2]).pow(coreReactorEffect(0)).pow(getSharkRankBonus('fish')).pow(simpleETEffect(12))
             .pow(remnantUpgEffect(4)).pow(tmp.explore_eff[0][1]).pow(spaceBaseUpgEffect('o2')).pow(spaceBaseUpgEffect('r3')).pow(spaceBaseUpgEffect('t4'))
 
@@ -26,7 +28,7 @@ const CURRENCIES = {
             x = expPow(x,coreReactorEffect(8))
             x = expPow(x,constellationBoostEffect(0,false))
             x = expPow(x,getSharkTierBonus('fish'))
-            x = expPow(x,remnantUpgEffect(19))
+            x = expPow(x,remnantUpgEffect(19))*/
 
             var s = E('ee40'), pre_s = x
             s = s.pow(getSharkRankBonus('so'))
@@ -44,8 +46,16 @@ const CURRENCIES = {
             return x
         },
     },
+    pearl: {
+        get amount() { return player.prestige.pearl },
+        set amount(v) { player.prestige.pearl = v.max(0) },
+    
+        get gain() {
+            return getSharkBonus("pearl", 0)
+        },
+    },
     prestige: {
-        get require() { return E(1e36) },
+        get require() { return E(1e5) },
 
         get amount() { return player.prestige.shards },
         set amount(v) { player.prestige.shards = v.max(0) },
@@ -54,14 +64,10 @@ const CURRENCIES = {
         set total(v) { player.prestige.total = v.max(0) },
     
         get gain() {
-            let x = player.total_fish.div(1e36)
+            let x = player.fish.div(1e5)
             if (x.lt(1)) return E(0)
 
-            var exp = 0.5
-            if (hasResearch('p4')) exp += 0.05
-            if (hasEvolutionGoal(5)) exp += 0.0125
-
-            x = expPow(x,exp).pow(coreReactorEffect(1)).mul(getSharkBonus("prestige")).mul(tmp.explore_eff[1][0])
+            x = x.sqrt().pow(coreReactorEffect(1)).mul(tmp.explore_eff[1][0])
 
             x = x.pow(tmp.explore_eff[3]).pow(simpleETEffect(13)).pow(getSharkRankBonus('prestige')).pow(forgeUpgradeEffect('shard'))
             .pow(tmp.explore_eff[1][1]).pow(spaceBaseUpgEffect('o3')).pow(spaceBaseUpgEffect('r4'))

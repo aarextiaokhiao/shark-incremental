@@ -1,43 +1,42 @@
 const RESEARCH = {
     p1: {
+        max: 2,
         unl: ()=>true,
         require: [
-            ['prestige',false,1e9],
+            ['prestige',false,l=>E(2).pow(l)],
         ],
-        effect(r) {
-            return Decimal.div(sharkUpgEffect('s2',0),100)
-        },
-        effDesc: x => "+"+format(x),
+        effect: l => E(2).pow(l),
+        effDesc: x => formatMult(x,0),
     },
     p2: {
         unl: ()=>true,
         require: [
-            ['prestige',false,1e11],
+            ['prestige',false,5],
         ],
+        effect: r => player.shark_level,
+        effDesc: x => "+"+format(x,0) + "kg"
     },
     p3: {
+        unl: ()=>true,
+        require: [
+            ['prestige',false,50],
+        ],
+    },
+    p4: {
         max: 5,
         noBuyMax: true,
         unl: ()=>true,
         require: [
-            ['prestige',false,l=>[1e13,1e15,1e24,1e30,1e48][l.round().toNumber()]??EINF,x=>0],
+            ['prestige',false,l=>E(100).pow(l.add(1))],
         ],
         onBuy() {
-            if (player.singularity.best_bh.gte(5)) return;
             CURRENCIES.prestige.amount = E(0)
-            resetSharkUpgrades('p1','p2')
+            CURRENCIES.pearl.amount = E(0)
+            resetSharkUpgrades('p1','p2','p3')
             doReset('prestige',true)
         },
-        effect(r) {
-            return r
-        },
-        effDesc: x => "-"+format(x,0),
-    },
-    p4: {
-        unl: ()=>true,
-        require: [
-            ['prestige',false,1e56],
-        ],
+        effect: r => r,
+        effDesc: x => "+"+format(x,0),
     },
     p5: {
         unl: ()=>player.feature>=4,

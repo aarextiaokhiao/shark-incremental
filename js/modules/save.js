@@ -1,11 +1,13 @@
 const VERSION = 2
-const SAVE_ID = "shark_inc_save"
+const SAVE_ID = "shark_inc_inflationless"
 var prevSave = "", autosave
 
 function getPlayerData() {
     let s = {
         fish: E(1),
         total_fish: E(0),
+        shark_charge: 0,
+
         shark_level: E(0),
         shark_rank: E(0),
         shark_tier: E(0),
@@ -13,6 +15,7 @@ function getPlayerData() {
 
         prestige: {
             shards: E(0),
+            pearl: E(0),
             total: E(0),
             times: 0,
         },

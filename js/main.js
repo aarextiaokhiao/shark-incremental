@@ -22,7 +22,7 @@ function loop() {
 const TOP_CURR = [
     {
         curr: "prestige",
-        req: ()=>player.total_fish.gte(CURRENCIES.prestige.require),
+        req: ()=>player.fish.gte(CURRENCIES.prestige.require),
     },
     {
         unl: ()=>player.core.times > 0 || hasDepthMilestone(0,4),
@@ -64,14 +64,14 @@ const TOP_CURR = [
 const PROGRESS = [
     {
         cond_text: true,
-        get amount() { return CURRENCIES.fish.total },
-        require: 1e36,
+        get amount() { return CURRENCIES.fish.amount },
+        require: 1e5,
         logHeight: 1,
     },{
         auto: true,
         get amount() { return CURRENCIES.prestige.amount },
         require: 1e3,
-    },{
+    }/*,{
         auto: true,
         get amount() { return CURRENCIES.prestige.amount },
         require: 1e9,
@@ -165,7 +165,7 @@ const PROGRESS = [
         get amount() { return CURRENCIES.hadron.total },
         require: '1e1000',
         logHeight: 2,
-    },
+    },*/
 ]
 
 function increaseFeature(v) {

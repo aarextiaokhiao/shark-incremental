@@ -2,17 +2,26 @@ function calc(dt) {
     if (tmp.pass > 0) {
         tmp.pass--
         ores_grid = []
-    }
-    else {
+    } else {
         let OA = offline.active
 
+		//Passive
         for (let [i,v] of Object.entries(CURRENCIES)) {
             var passive = v.passive ?? 1
             gainCurrency(i, tmp.currency_gain[i].mul(dt*passive))
         }
-    
-        let p = PROGRESS[player.feature]
-    
+
+		//Charge
+		player.shark_charge += dt
+		if (player.shark_charge > 5) {
+			let times = Math.floor(player.shark_charge / 5)
+			player.shark_charge = Math.max(player.shark_charge - times * 5, 0)
+			gainCurrency("fish", tmp.currency_gain.fish.mul(sharkUpgEffect('s2')).mul(times))
+			gainCurrency("pearl", tmp.currency_gain.pearl.mul(sharkUpgEffect('s2')).mul(times))
+		}
+
+		//Progression
+        let p = PROGRESS[player.feature]    
         if (p && p.auto && p.amount.gte(p.require)) player.feature++
     
         for (let [i,v] of Object.entries(AUTOMATION)) {
