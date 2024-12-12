@@ -9,7 +9,7 @@ const CURRENCIES = {
         get gain() {
             let x = getSharkBonus("fish").mul(sharkUpgEffect('s1')).mul(sharkUpgEffect('s3').eff)
 			x = x.mul(sharkUpgEffect('p1')).mul(tmp.explore_eff[0][0])
-			if (hasResearch("p1")) x = x.mul(2)
+			if (hasResearch("p1")) x = x.mul(researchEffect("p1"))
 
 			/*x = x.mul(tmp.core_bonus)
             x = x.pow(sharkUpgEffect('s4')).pow(tmp.explore_eff[2]).pow(coreReactorEffect(0)).pow(getSharkRankBonus('fish')).pow(simpleETEffect(12))

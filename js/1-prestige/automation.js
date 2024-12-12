@@ -3,7 +3,7 @@ var auto_time = {}
 
 const AUTOMATION = {
     shark: {
-        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
+        unl: ()=>player.feature>=2,
         interval: [10,0.9],
 
         cost: x=>Decimal.pow(20,x).mul(1e3),
@@ -16,11 +16,11 @@ const AUTOMATION = {
         },
     },
     su: {
-        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
+        unl: ()=>player.feature>=2,
         interval: [5,0.8],
 
-        cost: x=>Decimal.pow(100,x).mul(1e3),
-        bulk: x=>x.div(1e3).log(100).floor().add(1),
+        cost: x=>Decimal.pow(100,x).mul(1e4),
+        bulk: x=>x.div(1e4).log(100).floor().add(1),
 
         curr: "prestige",
 

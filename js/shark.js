@@ -4,7 +4,7 @@ const SHARK = {
 
     bonuses: {
         fish: [()=>player.shark_level.gte(1),l=>l.max(hasResearch("p3") ? E(1.2).pow(l) : E(1)),E(0)],
-        pearl: [()=>player.shark_level.gt(11),l=>l.sub(11).div(100).max(0)],
+        pearl: [()=>player.shark_level.gt(11),l=>l.sub(11).div(200).max(0)],
         core: [()=>player.shark_level.gte(300),l=>Decimal.add(1.01,getCRBoost(4,0)).pow(l.sub(299)).overflow('ee3',0.5),E(1)],
         remnants: [()=>player.shark_level.gte(1)&&hasSMilestone(0),l=>{
             let x = l
@@ -140,7 +140,7 @@ const SHARK_UPGRADES = {
         effDesc: x=>`${format(x.kg, 0)}kg / ${format(x.max, 0)}kg (${formatMult(x.eff)} to Fish)`,
     },
     s4: {
-        unl: ()=>player.feature>=1,
+        unl: ()=>player.feature>=3,
         req: ()=>player.shark_level.gte(38),
 
         cost: l => {

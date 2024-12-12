@@ -265,11 +265,11 @@ LANGUAGES.EN = {
         'research-p4-name': "Whiter Teeth",
         'research-p4-desc': `<b>+1</b> to ${toTextStyle("Shark Refinement",'shark')}'s base, but reset ${toTextStyle("Prestige",'prestige')} stuff.`,
 
-        'research-p5-name': "Mega Strength",
-        'research-p5-desc': `'Super Shark Strength' is <b>1%</b> stronger for every ${toTextStyle("Shark",'shark')} Level, starting at 100.`,
+        'research-p5-name': "???",
+        'research-p5-desc': `On charge, ${toTextStyle("Shark Agility",'shark')}'s effect temporaily speeds up in <b>1 second</b>.`,
 
-        'research-p6-name': "Super Scaled Shark",
-        'research-p6-desc': `'Scaled Shark' is <b>twice</b> as strong.`,
+        'research-p6-name': "???",
+        'research-p6-desc': `On charge, gain +10kg to ${toTextStyle("Shark Teeth",'shark')} in <b>1 second</b>.`,
 
         'research-p7-name': "Better Resources I",
         'research-p7-desc': `${toTextStyle("Coral",'coral')} and ${toTextStyle("Ice",'ice')}' effect is better.`,
@@ -941,8 +941,8 @@ LANGUAGES.EN = {
         get 'progress-0-cond-text'() { return `Do a ${toTextStyle('Prestige','prestige')}` },
 
         'progress-1-text': r => `Reach ${format(r)} ${toTextStyle('Prestige','prestige')} shards to unlock Automation`,
-        /*'progress-2-text': r => `Reach ${format(r)} ${toTextStyle('Prestige','prestige')} shards to unlock Research`,
-        'progress-3-text': r => `Reach ${toTextStyle('Shark','shark')} Level ${format(r,0)} to unlock Exploration`,
+        'progress-2-text': r => `Reach ${format(r)} ${toTextStyle('Prestige','prestige')} shards to unlock Agilities [soon]`,
+        /*'progress-3-text': r => `Reach ${toTextStyle('Shark','shark')} Level ${format(r,0)} to unlock Exploration`,
         'progress-4-text': r => `Reach ${format(r)}m of Pacific ocean's depth to unlock the ${toTextStyle('Core','core')}`,
 
         'progress-5-text': r => `Reach ${format(r)} total ${toTextStyle('Prestige','prestige')} shards`, 
@@ -1049,7 +1049,7 @@ LANGUAGES.EN = {
 
         'upgrade-shark': x => `Upgrade ${toTextStyle('Shark','shark')} Level<br>Cost: ${x.format(0)} ${toTextStyle('Fish','fish')}`,
         'shark-bonus-fish': x => `+${x.format(0)} ${toTextStyle('Fish','fish')}/s`,
-        'shark-bonus-pearl': x => `+${x.format(2)} ${toTextStyle('Pearl','pearl')}/s (boosted by Shark Ability)`,
+        'shark-bonus-pearl': x => `+${x.format(3)} ${toTextStyle('Pearl','pearl')}/s (boosted by Shark Agility)`,
         'shark-bonus-prestige': x => `${formatMult(x)} ${toTextStyle('Prestige','prestige')} shard`,
         'shark-bonus-core': x => `${formatMult(x)} ${toTextStyle('Magmatic','core')} fragments`,
         'shark-bonus-remnants': x => `+${x.format(0)} ${toTextStyle('Remnants','black-hole')}`,

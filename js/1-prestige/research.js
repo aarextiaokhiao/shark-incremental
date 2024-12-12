@@ -3,7 +3,7 @@ const RESEARCH = {
         max: 2,
         unl: ()=>true,
         require: [
-            ['prestige',false,l=>E(2).pow(l)],
+            ['prestige',false,l=>[1,50][l.toNumber()] ?? Infinity],
         ],
         effect: l => E(2).pow(l),
         effDesc: x => formatMult(x,0),
@@ -39,21 +39,18 @@ const RESEARCH = {
         effDesc: x => "+"+format(x,0),
     },
     p5: {
-        unl: ()=>player.feature>=4,
+        unl: ()=>player.feature>=3,
         require: [
-            ['prestige',false,1e98],
+            ['prestige',false,5e3],
         ],
-        effect(r) {
-            return player.shark_level.sub(99).max(0).div(100).add(1).softcap(10,0.5,0)
-        },
-        effDesc: x => formatPercent(x.sub(1)),
+        effect: r => sharkUpgEffect("s2", E(1)).div(2).max(1),
+        effDesc: x => formatMult(x)
     },
     p6: {
-        unl: ()=>player.explore.unl>=2 || player.core.times>0,
+        unl: ()=>player.feature>=3,
         require: [
-            ['prestige',false,1e155],
-            ['ice',false,1e13],
-        ],
+            ['prestige',false,1/0],
+        ]
     },
     p7: {
         unl: ()=>player.explore.unl>=3 || player.core.times>0,

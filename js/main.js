@@ -66,17 +66,14 @@ const PROGRESS = [
         cond_text: true,
         get amount() { return CURRENCIES.fish.amount },
         require: 1e5,
-        logHeight: 1,
     },{
         auto: true,
         get amount() { return CURRENCIES.prestige.amount },
-        require: 1e3,
+        require: 500,
+    },{
+        get amount() { return CURRENCIES.prestige.amount },
+        require: 5e4,
     }/*,{
-        auto: true,
-        get amount() { return CURRENCIES.prestige.amount },
-        require: 1e9,
-        logHeight: 1,
-    },{
         auto: true,
         get amount() { return player.shark_level },
         require: 110,
