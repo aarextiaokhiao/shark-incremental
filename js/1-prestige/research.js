@@ -23,7 +23,7 @@ const RESEARCH = {
         ],
     },
     p4: {
-        max: 5,
+        max: 4,
         noBuyMax: true,
         unl: ()=>true,
         require: [
