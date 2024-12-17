@@ -71,11 +71,13 @@ let AGILITY = {
 	},
 	tick(dt) {
 		// Check Pearls
-		let p = CURRENCIES.pearl
-		p.amount = p.amount.sub(dt * tmp.agility.total)
-		if (p.amount.eq(0) && tmp.agility.total > 0) {
-			player.agility.on = ["00", "10"]
-			addNotify(lang_text('notify-desc').agility_reset)
+		if (player.feature >= 3) {
+			let p = CURRENCIES.pearl
+			p.amount = p.amount.sub(dt * tmp.agility.total)
+			if (p.amount.eq(0) && tmp.agility.total > 0) {
+				player.agility.on = ["00", "10"]
+				addNotify(lang_text('notify-desc').agility_reset)
+			}
 		}
 
 		// Events
@@ -92,12 +94,14 @@ let AGILITY = {
 		}
 
 		// Calculate total
-		var cost_free = true
-		for (var i of player.agility.on) {
-			t.total += AGILITY.data[i[0]][i[1]].cost
-			if (!["00", "10"].includes(i)) cost_free = false
+		if (player.feature >= 3) {
+			var cost_free = true
+			for (var i of player.agility.on) {
+				t.total += AGILITY.data[i[0]][i[1]].cost
+				if (!["00", "10"].includes(i)) cost_free = false
+			}
+			t.total = cost_free ? 0 : (t.total ** 2) / (hasDepthMilestone(2,1) ? 1.5 : 1)
 		}
-		t.total = cost_free ? 0 : (t.total ** 2) / (hasDepthMilestone(2,1) ? 1.5 : 1)
 
 		// Calculate effects
 		var pow = sharkUpgEffect("s2", E(0)).toNumber()

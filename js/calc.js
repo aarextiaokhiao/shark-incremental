@@ -29,7 +29,7 @@ function calc(dt) {
             else auto_time[i] = 0
         }
     
-        if (player.feature >= 3) AGILITY.tick(dt)
+        AGILITY.tick(dt)
 
         if (player.feature >= 4) {
             let u = player.explore.unl
