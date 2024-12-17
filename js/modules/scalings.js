@@ -16,13 +16,6 @@ const SCALINGS = {
             [25,2,"P"],
         ],
     },
-    su_s4: {
-        get amount() { return player.shark_upg.s4 },
-
-        base: [
-            [10,3,"E2"],
-        ],
-    },
     su_m1: {
         get amount() { return player.shark_upg.m1 },
 
@@ -96,7 +89,7 @@ const SCALINGS = {
     },
 }
 
-const PRE_HADRON_SCALINGS = ['shark_rank','su_s4','su_m1','su_m3','su_m5','cr_boost','mining_tier','mining_ascend','remnant_upg','bh_tier']
+const PRE_HADRON_SCALINGS = ['shark_rank','su_m1','su_m3','su_m5','cr_boost','mining_tier','mining_ascend','remnant_upg','bh_tier']
 
 function getScalingStarts(id) {
     let b = SCALINGS[id].base.map(x=>x[0])
@@ -137,13 +130,6 @@ function getScalingStarts(id) {
 
 function getScalingPowers(id) {
     let b = SCALINGS[id].base.map(x=>x[1])
-
-    switch (id) {
-        case "su_s4": {
-            if (hasDepthMilestone(2,0)) b[0] = 2.75
-            break
-        }
-    }
 
     if (PRE_HADRON_SCALINGS.includes(id)) for (let i = 0; i < b.length; i++) b[i] = Decimal.pow(b[i],getNucleobaseEffect('adenine',1));
 

@@ -24,7 +24,7 @@ const CORE_RAD = {
     },
 
     gain() {
-        let m = tmp.explore_eff[4] ?? [1,1]
+        let m = tmp.explore.eff[4] ?? [1,1]
 
         let x = this.genValue(player.core.radiation.gen).mul(sharkUpgEffect('s5')).mul(m[0])
         

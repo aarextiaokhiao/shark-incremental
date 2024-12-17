@@ -49,6 +49,7 @@
     <!-- Prestige - v0.1 -->
     <script src="js/1-prestige/automation.js"></script>
     <script src="js/1-prestige/research.js"></script>
+    <script src="js/1-prestige/agility.js"></script>
     <script src="js/1-prestige/explore.js"></script>
 
     <!-- Magmatic - v0.1 -->
@@ -95,7 +96,6 @@
             <div id="auto-table"></div>
         </div><div id="research-tab">
             <div class="table-center" style="align-items: center;">
-                <div id="radio-max-research-amt" class="input-radio"></div>
                 <div style="margin: 10px; align-items: center;" class="table-center" id="research-page-div">
                     <button style="height: 40px; width: 40px;" onclick="changeResearchPage(-1)">◀</button>
                     <div>
@@ -107,6 +107,22 @@
                 <div id="radio-visible-research" class="input-radio"></div>
             </div>
             <div id="research-table"></div>
+        </div><div id="agility-tab">
+            <details id="agility-summary"></details><br>
+
+            <div id="agility-pearl"></div>
+            <div id="agility-power"></div>
+            <div class="option-div">
+                <div id="agility-0">
+                    <button>Every 5 seconds, attain ...</button>
+                    <button>Per 5 seconds, produce ...</button>
+                    <button>Overcharge.</button>
+                </div><div id="agility-1">
+                    <button>___ worth of Shark effects.</button>
+                    <button>___ Fish multiplier.</button>
+                    <button>___ Prestige Shards.</button>
+                </div>
+            </div>			
         </div><div id="explore-tab">
             <div id="next-explore"></div>
             <div id="explore-table">
@@ -156,7 +172,6 @@
                     <td style="width: 50%;">
                         <div id="shark-elo-div"></div>
                         <div id="shark-elo-calc"></div>
-                        <p id="shark-overpopulation"></p>
                     </td><td style="width: 50%;">
                         <div id="shark-rank-div"></div>
                         <subtitle id="shark-rank-note"></subtitle>
@@ -364,7 +379,6 @@
                     <div class="item-left">
                         <div id="radio-autosave" class="input-radio"></div>
                         <br><div id="radio-offline" class="input-radio"></div>
-                        <br><div id="radio-notify" class="input-radio"></div>
                         <div id="radio-notation" class="input-radio"></div>
                     </div>
                 </div>

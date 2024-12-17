@@ -6,26 +6,20 @@ const SUPERSCRIPT_NUMBERS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
 
 const FORMATS = {
 	sc(ex, acc) {
-		if (ex.lt(1e6)) return formatShort(ex, acc)
-
-		var e = ex.log10().floor(), a = E(4).sub(e.log10().floor())
-		return (a.lt(0)?'':ex.div(Decimal.pow10(e)).toFixed(a))+'e'+format(e, 0)
+		var e = ex.log10().floor(), a = 4 - e.e
+		return (a < 0 ? '' : ex.m.toFixed(Math.min(a, 3)))+'e'+format(e, 0)
 	},
-	mixed_sc: (ex, acc) => FORMATS[ex.gte(1e6) && ex.lt(1e15) ? "st" : "sc"](ex,acc),
+	mixed_sc: (ex, acc) => FORMATS[ex.gte(1e6) && ex.lt(1e36) ? "st" : "sc"](ex,acc),
 	st(ex, acc) {
-		if (ex.lt(1e3)) return formatShort(ex, acc)
-		ex = ex.div(1e3)
+		ex = ex.toNumber()
 
-		var m1, m2, p, e3 = ex.log(1e3).floor()
-		p = e3.max(1).log10().floor().toNumber() - 1
-		m2 = ex.div(E(1e3).pow(e3.sub(1))).toNumber()
-		m1 = Math.floor(m2 / 1e3)
-		p += Math.floor(Math.log10(m1))
-		m2 = Math.floor((m2 % 1e3) / 10**p) * 10**p
-		ex = e3.toNumber()
+		var e = Math.floor(Math.log10(ex))
+		var e3 = Math.floor(e / 3)
+		var p = 3 - e % 3
+		var m = Math.floor(ex * 10 ** (p - e3 * 3)) / 10 ** p
 
-		var pre = ["K", "M", "B", "T"][ex]
-		return (m1 + m2 / 1e3).toFixed(Math.min(3 - p, 3)) + " " + pre
+		return m.toFixed(p) +
+			(e3 ? " " + ["K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "De"][e3 - 1] : "")
 	},
 }
 
@@ -42,53 +36,29 @@ function toSuperscript(value) {
 }
 
 function format(ex, acc=2, type=options.notation) {
-    ex = E(ex), neg = ex.lt(0)?"-":""
-    if (neg) ex = ex.negate()
-    if (ex.lt(10**-acc)) return (0).toFixed(acc)
-    if (ex.mag == Infinity) return neg + 'Infinite'
-    if (Number.isNaN(ex.mag)) return neg + 'NaN'
+    ex = E(ex)
 
+	// Negatives
+	var neg = ex.lt(0)?"-":""
+    if (neg) ex = ex.negate()
+
+	// Special cases
+    if (Number.isNaN(ex.mag)) return 'NaN'
+    if (ex.mag == 1/0) return '∞'
+    if (ex.lt(10**-acc)) return (0).toFixed(acc)
+	if (ex.lt(1e6)) return formatShort(ex, acc)
+
+	// Big values
 	let f = FORMATS[type] ?? FORMATS.mixed_sc
     return neg + f(ex, acc)
 }
 
 function formatShort(ex, acc = 0) {
-	var a = Math.max(acc - Math.max(ex.log10().floor().toNumber(), 0), 0)
-	return a>0?ex.toFixed(a):ex.toFixed(a).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+	var a = Math.max(acc - Math.max(ex.e, 0), 0)
+	return a > 0 ? ex.toFixed(a) : ex.toFixed(a).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
-const DT = Decimal.tetrate(10,6)
-
 function formatGain(a,e) {
-    const g = Decimal.add(a,e.div(FPS))
-
-    if (g.neq(a)) {
-        if (a.gte(DT)) {
-            var oom = E(g).slog(10).sub(E(a).slog(10)).mul(FPS)
-            if (oom.gte(1e-3)) return "(+" + oom.format() + " OoMs^^2/s)"
-        }
-
-        if (a.gte('ee100')) {
-            var tower = Math.floor(E(a).slog(10).toNumber() - 1.3010299956639813);
-    
-            var oom = E(g).iteratedlog(10,tower).sub(E(a).iteratedlog(10,tower)).mul(FPS), rated = false;
-    
-            if (oom.gte(1)) rated = true
-            else if (tower > 2) {
-                tower--
-                oom = E(g).iteratedlog(10,tower).sub(E(a).iteratedlog(10,tower)).mul(FPS)
-                if (oom.gte(1)) rated = true
-            }
-    
-            if (rated) return "(+" + oom.format() + " OoMs^"+tower+"/s)"
-        }
-    
-        if (a.gte(1e100)) {
-            const oom = g.div(a).log10().mul(FPS)
-            if (oom.gte(1)) return "(+" + oom.format() + " OoMs/s)"
-        }
-    }
-
     return "(" + (e.lt(0) ? "" : "+") + format(e) + "/s)"
 }
 

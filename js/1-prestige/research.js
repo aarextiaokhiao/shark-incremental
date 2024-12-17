@@ -3,7 +3,7 @@ const RESEARCH = {
         max: 2,
         unl: ()=>true,
         require: [
-            ['prestige',false,l=>[1,50][l.toNumber()] ?? Infinity],
+            ['prestige',false,l=>E(50).pow(l),x=>x.log(50).add(1).floor()],
         ],
         effect: l => E(2).pow(l),
         effDesc: x => formatMult(x,0),
@@ -41,60 +41,39 @@ const RESEARCH = {
     p5: {
         unl: ()=>player.feature>=3,
         require: [
-            ['prestige',false,5e3],
-        ],
-        effect: r => sharkUpgEffect("s2", E(1)).div(2).max(1),
-        effDesc: x => formatMult(x)
+            ['prestige',false,1e7],
+        ]
     },
     p6: {
         unl: ()=>player.feature>=3,
         require: [
-            ['prestige',false,1/0],
+            ['pearl',false,5e3],
         ]
     },
     p7: {
-        unl: ()=>player.explore.unl>=3 || player.core.times>0,
+        unl: ()=>player.feature>=3,
         require: [
-            ['prestige',false,1e265],
-            ['salt',false,1e7],
+            ['salt',false,1e4],
         ],
-    },
-    p8: {
-        unl: ()=>player.feature>=7,
-        require: [
-            ['core',false,25e6],
-            ['prestige',false,'e14000'],
-        ],
-    },
-    p9: {
-        max: 3,
-        unl: ()=>player.feature>=13,
-        require: [
-            ['stone',false,l=>Decimal.pow(10,l).mul(100),x=>x.div(100).log(10).add(1).floor()]
-        ],
-        effect(r) {
-            return r.mul(0.05)
-        },
-        effDesc: x => "^"+format(Decimal.sub(1.25,x)),
     },
 
     e1: {
-        unl: ()=>player.explore.unl>=3 || player.core.times>0,
+        unl: ()=>player.feature>=3,
         require: [
-            ['coral',false,1e42],
+            ['coral',false,1e9],
         ],
         effect(r) {
-            return player.explore.res[2].add(1).root(2)
+            return player.explore.res[2].add(10).log10()
         },
         effDesc: x => formatMult(x),
     },
     e2: {
-        unl: ()=>player.explore.unl>=4 || player.core.times>0,
+        unl: ()=>player.feature>=3,
         require: [
-            ['ice',false,1e36],
+            ['ice',false,1e9],
         ],
         effect(r) {
-            return player.explore.res[3].add(1).root(2)
+            return player.explore.res[3].add(10).log10()
         },
         effDesc: x => formatMult(x),
     },
@@ -135,26 +114,26 @@ const RESEARCH = {
     },
 
     c1: {
-        unl: ()=>player.core.times>0,
+        unl: ()=>false,
         require: [
             ['core',false,10],
         ],
     },
     c2: {
         max: 4,
-        unl: ()=>player.core.times>0,
+        unl: ()=>false,
         require: [
             ['core',false,l=>l.add(1).pow(3).mul(100),x=>x.div(100).root(3).floor()],
         ],
     },
     c3: {
-        unl: ()=>player.core.times>0,
+        unl: ()=>false,
         require: [
             ['core',false,1e3],
         ],
     },
     c4: {
-        unl: ()=>player.core.times>0,
+        unl: ()=>false,
         require: [
             ['core',false,1e3],
             ['prestige',false,'e2000'],
@@ -587,9 +566,7 @@ const RESEARCH = {
             ['hadron',true,5]
         ],
         effect(r) {
-            let x = player.shark_level.add(10).slog(10)
-            if (hasResearch('h6')) x = x.max(player.shark_level.add(1).slog(2).pow_base(2));
-            return x
+            return E(1)
         },
         effDesc: x => formatMult(x),
     },
@@ -632,7 +609,7 @@ const RESEARCH = {
             ['hadron',false,1e50]
         ],
         effect(r) {
-            return player.fish.add(1).slog(2).pow_base(2)
+            return E(1)
         },
         effDesc: x => formatMult(x),
     },
@@ -732,6 +709,7 @@ function purchaseResearch(id,bulking=false) {
             after.forEach(x => {if (x[1]) x[0].amount = x[1]})
         }
         R.onBuy?.()
+        updateVisibleResearch()
     }
 }
 
@@ -741,13 +719,17 @@ function changeResearchPage(diff) {
     updateResearchHTML()
 }
 
+function updateVisibleResearch() {
+    var hidden = player.radios['visible-research']
+    tmp.research_visible = RESEARCH_KEYS.filter(x => RESEARCH[x].unl() && (!hidden || !isResearchMaxed(x)))
+}
+
 function updateResearchHTML() {
     let text = [lang_text('effect'),lang_text('level'),lang_text('require'),lang_text('all-research')]
 
-    var hidden = player.radios['visible-research']
-    var visible_research = (hidden ? RESEARCH_KEYS.filter(x => !isResearchMaxed(x)) : RESEARCH_KEYS).filter(x => RESEARCH[x].unl())
+    var visible_research = tmp.research_visible
 
-    var m = MAX_RESEARCH[player.radios['max-research-amt']]
+    var m = 15
     var unl = visible_research.length > m
     el("research-page-div").style.display = el_display(unl)
     if (unl) {
@@ -761,7 +743,7 @@ function updateResearchHTML() {
     }
 
     for (let [i,x] of Object.entries(RESEARCH)) {
-        let unl = visible_research.includes(i) && x.unl(), el_id = "research-"+i
+        let unl = visible_research.includes(i), el_id = "research-"+i
         el(el_id+"-div").style.display = el_display(unl)
         if (unl) {
             let amt = player.research[i], max = x.max??1, bought = amt.gte(max), afford = true

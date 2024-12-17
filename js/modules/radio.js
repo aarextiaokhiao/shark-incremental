@@ -20,7 +20,6 @@ function createRadio(id, title, names=[], config={}) {
 
 function updateRadio(id) {
     var e = document.getElementById('radio-'+id+'-select')
-
     if (!e) return
 
     e.style.left = (radios[id]/radios_config[id].length*100)+'%'
@@ -34,4 +33,5 @@ function chooseRadio(id,v) {
         clearInterval(autosave)
         autosave = setInterval(save, [1/0,15000,30000,60000][player.radios[id]], true)
     }
+	if (id == "visible-research") updateVisibleResearch()
 }

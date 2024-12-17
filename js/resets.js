@@ -4,7 +4,6 @@ const RESETS = {
         reset(force) {
             if (!force) {
                 gainCurrency('prestige',tmp.currency_gain.prestige)
-                player.prestige.times++
                 increaseFeature(1)
             }
 
@@ -14,13 +13,15 @@ const RESETS = {
             player.fish = E(1)
             player.total_fish = E(0)
             player.shark_level = E(0)
-
+            player.agility.mult = 1
             resetSharkUpgrades('s1','s2','s3','s4')
+
+			tmp.pass = 1
         },
 		minimum_threshold: 1,
     },
     core: {
-        get require() { return player.prestige.total.gte('e450') },
+        get require() { return player.prestige.shards.gte(1e22) },
         reset(force) {
             if (!force) {
                 gainCurrency('core',tmp.currency_gain.core)
@@ -34,14 +35,16 @@ const RESETS = {
             this.doReset()
         },
         doReset() {
+            resetSharkUpgrades('p1','p2','p3')
             player.prestige.total = E(0)
             player.prestige.shards = E(0)
+            CURRENCIES.pearl.amount = E(0)
+            resetResearch('p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'e1', 'e2')
+            player.auto.shark[0] = -1
+            player.auto.su[0] = -1
+			player.agility.on = ["00", "10"]
 
-            resetSharkUpgrades('p1','p2','p3')
-            if (!hasResearch("c1")) resetResearch('p3','e1','e2')
-
-            var k = player.research.c2.round().toNumber()
-
+            var k = 0
             player.explore.unl = k == 4 && player.feature>=8 ? 5 : k
             for (let x = 0; x < 4; x++) {
                 player.explore.res[x] = E(0)
@@ -86,7 +89,7 @@ const RESETS = {
             }
 
             resetSharkUpgrades('s5')
-            if (!hasEvolutionGoal(4)) resetResearch('p8','e3','e4','e5','c3','c4','c5','c7','c8','c9')
+            if (!hasEvolutionGoal(4)) resetResearch('e3','e4','e5','c3','c4','c5','c7','c8','c9')
 
             for (let x = 0; x < 5; x++) {
                 player.explore.res[x] = E(0)

@@ -6,8 +6,9 @@ const AUTOMATION = {
         unl: ()=>player.feature>=2,
         interval: [10,0.9],
 
-        cost: x=>Decimal.pow(20,x).mul(1e3),
-        bulk: x=>x.div(1e3).log(20).floor().add(1),
+        init_cost: 1e3,
+        cost: x=>Decimal.pow(5,x).mul(1e5),
+        bulk: x=>x.div(1e5).log(5).floor().add(1),
 
         curr: "prestige",
 
@@ -17,10 +18,11 @@ const AUTOMATION = {
     },
     su: {
         unl: ()=>player.feature>=2,
-        interval: [5,0.8],
+        interval: [10,0.9],
 
-        cost: x=>Decimal.pow(100,x).mul(1e4),
-        bulk: x=>x.div(1e4).log(100).floor().add(1),
+        init_cost: 1e3,
+        cost: x=>Decimal.pow(5,x).mul(1e7),
+        bulk: x=>x.div(1e7).log(5).floor().add(1),
 
         curr: "prestige",
 
@@ -31,7 +33,7 @@ const AUTOMATION = {
         },
     },
     spu: {
-        unl: ()=>hasDepthMilestone(1,0) || player.singularity.best_bh.gte(2),
+        unl: ()=>player.singularity.best_bh.gte(2),
         interval: [1,0.9],
 
         cost: x=>Decimal.pow(1e5,x).mul(1e125),
@@ -262,13 +264,16 @@ function toggleAutomation(i) {
 }
 
 function isAutoEnabled(i) {
-    return AUTOMATION[i].unl() && player.auto[i][1]
+    return AUTOMATION[i].unl() && player.auto[i][0] !== -1 && player.auto[i][1]
 }
 
 function buyAutomation(i) {
     const A = AUTOMATION[i]
     if (A.unl()) {
-        let res = CURRENCIES[A.curr], cost = A.cost(player.auto[i][0])
+        let res = CURRENCIES[A.curr]
+        if (player.auto[i][0] == -1 && res.amount.gte(A.init_cost)) player.auto[i][0] = 0
+
+        let cost = A.cost(player.auto[i][0])
         if (res.amount.gte(cost)) {
             let bulk = A.bulk(res.amount).min(A.max).toNumber()
             if (bulk > player.auto[i][0]) {
@@ -300,15 +305,15 @@ function updateAutomationHTML() {
         if (unl) {
             let a = player.auto[i], maxed = a[0]>=x.max
             let [I,D] = x.interval
-            el(`auto-${i}-interval`).textContent = lang_text('auto-interval',Math.max(I*D**a[0],AUTO_MIN_INTERVAL),Math.max(I*D**(a[0]+1),AUTO_MIN_INTERVAL),maxed) // `Interval: ${format(Math.max(I*D**a[0],AUTO_MIN_INTERVAL),3)}s`+(maxed ? "" :` ➜ ${format(Math.max(I*D**(a[0]+1),AUTO_MIN_INTERVAL),3)}s`)
+            el(`auto-${i}-interval`).textContent = a[0] == -1 ? "Re-locked" : lang_text('auto-interval',Math.max(I*D**a[0],AUTO_MIN_INTERVAL),Math.max(I*D**(a[0]+1),AUTO_MIN_INTERVAL),maxed)
             
             el(`auto-${i}-switch`).textContent = lang_text('off-on',a[1])
 
             el(`auto-${i}-cost`).style.display = el_display(!maxed)
             if (!maxed) {
-                let res = CURRENCIES[x.curr], cost = x.cost(a[0])
+                let res = CURRENCIES[x.curr], cost = a[0] == -1 ? x.init_cost : x.cost(a[0])
 
-                el(`auto-${i}-cost`).innerHTML = lang_text('auto-cost',D,cost,res.costName) // `Decrease Interval by ${formatReduction(D,0)}.<br>Cost: ${format(cost,0)} ${res.costName}`
+                el(`auto-${i}-cost`).innerHTML = lang_text('auto-cost' + (a[0] == -1 ? "-off" : ""),D,cost,res.costName)
                 el(`auto-${i}-cost`).className = el_classes({'auto-button': true, locked: res.amount.lt(cost)})
             }
         }

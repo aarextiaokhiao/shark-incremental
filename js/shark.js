@@ -3,8 +3,8 @@ const SHARK = {
     bulk(x=player.fish) { return x.log(5).floor().add(1) },
 
     bonuses: {
-        fish: [()=>player.shark_level.gte(1),l=>l.max(hasResearch("p3") ? E(1.2).pow(l) : E(1)),E(0)],
-        pearl: [()=>player.shark_level.gt(11),l=>l.sub(11).div(200).max(0)],
+        fish: [()=>player.shark_level.gte(1),l=>inExploration(1) ? E(1) : l.max(hasResearch("p3") ? E(1.2).pow(l) : E(1)),E(0)],
+        pearl: [()=>player.shark_level.gt(hasResearch("p5") ? 7 : 11),l=>l.sub(hasResearch("p5") ? 7 : 11).div(200).max(0)],
         core: [()=>player.shark_level.gte(300),l=>Decimal.add(1.01,getCRBoost(4,0)).pow(l.sub(299)).overflow('ee3',0.5),E(1)],
         remnants: [()=>player.shark_level.gte(1)&&hasSMilestone(0),l=>{
             let x = l
@@ -53,7 +53,7 @@ const SHARK = {
 
     tier: {
         get ELO() {
-            var x = player.shark_rank.add(1).slog(10).pow10().sub(1)
+            var x = E(0)
 
             x = x.mul(player.hadron.total.add(1).log10())
 
@@ -84,18 +84,6 @@ const SHARK = {
             nucleobase: [()=>player.shark_tier.gte(75),l=>Decimal.pow(1.1,l.sub(99).pow(.75)).mul(l.sub(99)),E(1),x=>formatMult(x)],
         },
     },
-
-    get fish_cap() {
-        let x = E('ee9e15')
-
-        let b = 10
-        if (hasResearch('h4')) b -= 2.5;
-        if (hasResearch('h8')) b -= 0.5;
-
-        x = x.addTP(player.hadron.total.add(1).log10().add(1).log10().div(b))
-
-        return x
-    },
 }
 
 const SHARK_UPGRADES = {
@@ -111,6 +99,7 @@ const SHARK_UPGRADES = {
         effDesc: x=>formatMult(x,0),
     },
     s2: {
+        unl: ()=>!inExploration(0),
         req: ()=>player.shark_level.gte(4),
 
         cost: l => Decimal.pow(2,l).mul(200),
@@ -119,9 +108,10 @@ const SHARK_UPGRADES = {
         curr: "fish",
 
         effect: l=>l.mul(2),
-        effDesc: x=>`+${format(x,0)}s worth of fish`,
+        effDesc: x=>`+${formatTime(x,0)} worth of fish`,
     },
     s3: {
+        unl: ()=>!inExploration(3),
         req: ()=>player.shark_level.gte(5),
 
         cost: l => Decimal.pow(2,l).mul(2e3),
@@ -131,6 +121,8 @@ const SHARK_UPGRADES = {
 
         effect: l=>{
 			let kg = l.add(2).mul(5)
+			if (hasDepthMilestone(0,3)) kg = kg.add(player.shark_upg.p2)
+
 			let max = E(30).add(sharkUpgEffect('p2', 0)).add(sharkUpgEffect('p3', 0))
 			if (hasResearch('p2')) max = max.add(researchEffect('p2', 0))
 
@@ -140,27 +132,15 @@ const SHARK_UPGRADES = {
         effDesc: x=>`${format(x.kg, 0)}kg / ${format(x.max, 0)}kg (${formatMult(x.eff)} to Fish)`,
     },
     s4: {
-        unl: ()=>player.feature>=3,
-        req: ()=>player.shark_level.gte(38),
+        unl: ()=>player.feature>=4,
 
-        cost: l => {
-            let x = Decimal.pow(1e5,l.scaleAll("su_s4").pow(1.25)).mul(1e135)
-            if (hasResearch('c3')) x = x.root(coreReactorEffect(3))
-            return x
-        },
-        bulk: x => {
-            if (hasResearch('c3')) x = x.pow(coreReactorEffect(3))
-            return x.div(1e135).log(1e5).root(1.25).scaleAll("su_s4",true).floor().add(1)
-        },
+        cost: l => Decimal.pow(10,l.sub(tmp.explore.eff[2])).mul(1e23),
+        bulk: x => x.div(1e23).log(10).add(tmp.explore.eff[2]).floor().add(1),
 
         curr: "fish",
 
-        effect: l=>{
-            let x = l.div(100).add(1)
-            if (hasResearch('m6')) x = x.pow(l.add(10).log10().pow(2))
-            return x
-        },
-        effDesc: x=>formatPow(x),
+        effect: l=>l.add(1),
+        effDesc: x=>formatMult(x),
     },
     s5: {
         unl: ()=>player.feature>=7,
@@ -184,18 +164,18 @@ const SHARK_UPGRADES = {
     },
 
     p1: {
-        req: ()=>player.prestige.times>0,
+        req: ()=>player.feature>=1,
 
         cost: l => E(2).pow(l),
         bulk: x => x.log(2).floor().add(1),
 
         curr: "prestige",
 
-        effect: l=>l.add(1),
+        effect: l=>l.add(1).pow(hasDepthMilestone(1,2) ? 1.3 : 1),
         effDesc: x=>formatMult(x,0),
     },
     p2: {
-        unl: ()=>player.prestige.times>0,
+        unl: ()=>player.feature>=1,
 
         cost: l => E(2).pow(l).mul(2),
         bulk: x => x.div(2).log(2).floor().add(1),
@@ -206,10 +186,10 @@ const SHARK_UPGRADES = {
         effDesc: x=>"+"+format(x,0)+"kg",
     },
     p3: {
-        unl: ()=>player.prestige.times>0,
+        unl: ()=>player.feature>=1,
 
-        cost: l => l.add(3).pow(3),
-        bulk: x => x.root(3).sub(3).floor().add(1),
+        cost: l => l.add(3).sub(tmp.explore.eff[2]).max(0).pow(3),
+        bulk: x => x.root(3).add(tmp.explore.eff[2]).sub(3).floor().add(1),
 
         curr: "pearl",
 
@@ -371,7 +351,7 @@ const SU_TABS = {
 function canAffordSharkUpgrade(i) {
     const u = SHARK_UPGRADES[i]
 
-    if (tmp.su_locked[u.curr] || u.unl && !u.unl() || u.req && !u.req()) return false;
+    if (u.unl && !u.unl() || u.req && !u.req()) return false;
 
     return CURRENCIES[u.curr].amount.gte(u.cost(player.shark_upg[i]))
 }
@@ -379,7 +359,7 @@ function canAffordSharkUpgrade(i) {
 function buySharkUpgrade(i) {
     const u = SHARK_UPGRADES[i]
 
-    if (tmp.su_locked[u.curr] || u.unl && !u.unl() || u.req && !u.req()) return;
+    if (u.unl && !u.unl() || u.req && !u.req()) return;
 
     let cost = u.cost(player.shark_upg[i]), curr = CURRENCIES[u.curr]
 
@@ -391,7 +371,7 @@ function buySharkUpgrade(i) {
 function buyMaxSharkUpgrade(i) {
     const u = SHARK_UPGRADES[i]
 
-    if (tmp.su_locked[u.curr] || u.unl && !u.unl() || u.req && !u.req()) return;
+    if (u.unl && !u.unl() || u.req && !u.req()) return;
 
     let cost = u.cost(player.shark_upg[i]), curr = CURRENCIES[u.curr]
 
@@ -412,17 +392,8 @@ function buyAllSharkUpgrades(ii=[]) {
 }
 
 function updateSharkTemp() {
-    var l = {}
-
-    if (inExploration(3)) {
-        l.fish = true
-        l.prestige = true
-    }
-
-    tmp.su_locked = l
-
     tmp.su_el.fish = false
-    tmp.su_el.prestige = hasDepthMilestone(1,2)
+    tmp.su_el.prestige = false
 
     if (hasForgeUpgrade('auto')) {
         tmp.su_el.stone = true
@@ -500,8 +471,8 @@ function updateSharkUpgradesHTML() {
 
         el('su-'+i+'-level').textContent = amt.format(0)
 
-        el('su-'+i+'-cost').innerHTML = tmp.su_locked[v.curr] ? `Locked` : `${cost_text}: ${cost.format(0)} ${CURRENCIES[v.curr].costName}`
-        el('su-'+i+'-cost').className = el_classes({'shark-upgrade-button': true, locked: tmp.su_locked[v.curr] || CURRENCIES[v.curr].amount.lt(cost)})
+        el('su-'+i+'-cost').innerHTML = `${cost_text}: ${cost.format(0)} ${CURRENCIES[v.curr].costName}`
+        el('su-'+i+'-cost').className = el_classes({'shark-upgrade-button': true, locked: CURRENCIES[v.curr].amount.lt(cost)})
 
         el('su-'+i+'-desc').innerHTML = lang_text('su-'+i+'-desc')+"<br>"+effect_text+": <b>"+v.effDesc(tmp.shark_upg_eff[i])+"</b>"
     }
@@ -516,8 +487,6 @@ function updateSharkRankHTML() {
 
     var rank_text = lang_text("shark-rank-bonuses")
     el('shark-rank-bonus').innerHTML = Object.keys(SHARK.rank.bonuses).filter(x=>SHARK.rank.bonuses[x][0]()).map(x=>rank_text[x](getSharkRankBonus(x))).join(", ")
-
-    el("shark-overpopulation").innerHTML = tmp.shark_op.gt(1) ? lang_text("shark-overpopulation",tmp.shark_op,tmp.shark_op_start) : ""
 }
 
 function updateSharkTierHTML() {

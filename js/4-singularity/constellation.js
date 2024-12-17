@@ -85,9 +85,7 @@ const CONSTELLATION = {
             name: "hawking-radiation",
             req: 24,
             effect(r,d) {
-                let slog = r.add(1).slog(10)
-                let x = d ? E(1) : slog.pow_base(2).mul(slog.add(1)).pow(constellationBoostEffect(6,false,E(1)).slog(10).add(1))
-                return x
+                return E(1)
             },
             effDesc: x=>formatMult(x,3),
         },{

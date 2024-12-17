@@ -30,7 +30,6 @@ function calcLevelBonus(l,l0,b) {
 }
 
 function expPow(a,b) { return Decimal.lt(a,1) ? Decimal.pow(a,b) : Decimal.pow(10,Decimal.max(a,1).log10().add(1).pow(b).sub(1)) }
-function revExpPow(a,b) { return Decimal.pow(10,Decimal.max(a,1).log10().add(1).root(b).sub(1)) }
 
 Decimal.prototype.clone = function() {
     return this
@@ -66,22 +65,6 @@ function overflow(number, start, power, meta=1){
 }
 
 Decimal.prototype.overflow = function (start, power, meta) { return overflow(this.clone(), start, power, meta) }
-
-function tetraflow(number,start,power) { // EXPERIMENTAL FUNCTION - x => 10^^((slog10(x)-slog10(s))*p+slog10(s))
-    if(isNaN(number.mag))return new Decimal(0);
-    start=E(start);
-    if(number.gte(start)){
-        let s = start.slog(10)
-        // Fun Fact: if 0 < number.slog(10) - start.slog(10) < 1, such like overflow(number,start,power,start.slog(10).sub(1).floor())
-        number=Decimal.tetrate(10,number.slog(10).sub(s).mul(power).add(s))
-    }
-    return number;
-}
-
-Decimal.prototype.addTP = function (val) {
-    var e = this.clone()
-    return Decimal.tetrate(10, e.slog(10).add(val))
-}
 
 function preventNaNDecimal(x,def) {
     return isNaN(x.mag) ? E(def ?? 0) : x

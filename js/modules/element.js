@@ -8,8 +8,6 @@ function updateHTML() {
 
     var f = CURRENCIES.fish.amount, ff = []
 
-    if (f.gte(tmp.fish_cap)) ff.push(icon("benzene"));
-    if (f.gte(tmp.shark_op_start)) ff.push(icon("biohazard"));
     if (tmp.cr_active) ff.push(icon("radioactive"));
 
     el('fish-amount').innerHTML = f.format(0) + (ff.length > 0 ? " " + ff.join("") : "")
@@ -26,6 +24,7 @@ function setupHTML() {
     setupTopCurrenciesHTML()
     setupAutomationHTML()
     setupResearchHTML()
+    AGILITY.setupHTML()
     setupExplorationHTML()
     setupCoreHTML()
     setupEvolutionHTML()

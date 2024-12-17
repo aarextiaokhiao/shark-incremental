@@ -11,17 +11,6 @@ const TAB_IDS = {
     'options': {
         html() {  },
     },
-    'auto': {
-        html() { updateAutomationHTML() },
-        
-        notify() {
-            for (let [i,x] of Object.entries(AUTOMATION)) {
-                var lvl = player.auto[i][0]
-                if (x.unl() && lvl < x.max && CURRENCIES[x.curr].amount.gte(x.cost(lvl))) return true
-            }
-            return false
-        },
-    },
     'research': {
         html() { updateResearchHTML() },
 
@@ -52,17 +41,30 @@ const TAB_IDS = {
             return false
         },
     },
+    'auto': {
+        html() { updateAutomationHTML() },
+        
+        notify() {
+            for (let [i,x] of Object.entries(AUTOMATION)) {
+                var lvl = player.auto[i][0]
+                if (x.unl() && lvl < x.max && CURRENCIES[x.curr].amount.gte(x.cost(lvl))) return true
+            }
+            return false
+        },
+    },
+    'agility': {
+        html() { AGILITY.updateHTML() },
+    },
     'explore': {
         html() { updateExplorationHTML() },
 
         notify() {
             if (isAutoEnabled('eu')) return false
             for (let i = 0; i < EXPLORE.length; i++) if (i < player.explore.unl) {
-                var e = EXPLORE[i]
-
-                var amt = [CURRENCIES[e.cost[0][2]].amount, player.explore.res[i]]
-
-                for (let j = 0; j < 2; j++) if (amt[j].gte(e.cost[j][0](player.explore.upg[i][j]))) return true
+                var cost = EXPLORE[i].cost
+                var amt = player.explore.upg[i][0]
+                var res = player.explore.res[i]
+                if (res.gte(cost[0](amt))) return true
             }
             return false
         },
@@ -227,16 +229,17 @@ const TABS = [
     { // 0
         stab: "shark",
     },{
-        stab: "options",
-    },{
+        id: 'prestige',
         unl: ()=>player.feature>=1,
-        stab: "research",
-    },{
-        unl: ()=>player.feature>=2 || player.singularity.best_bh.gte(2),
-        stab: "auto",
-    },{ // 5
-        unl: ()=>!tmp.ss_difficulty && player.feature>=4,
-        stab: "explore",
+        stab: [
+            ["research"],
+            ['auto',()=>player.feature>=2],
+            ['agility',()=>player.feature>=3],
+            ['explore',()=>player.feature>=4]
+        ],
+        style: {
+            "background": `repeating-linear-gradient(#bff, #0ff, #bff)`,
+        },
     },{
         unl: ()=>tmp.ss_difficulty,
         stab: "space-base",
@@ -318,7 +321,9 @@ const TABS = [
             "backgroundSize": "200px 200px",
             "animation": `cosmic-pattern 20s linear infinite`,
         },
-    },
+    },{
+        stab: "options",
+    }
 ]
 
 const DEFAULT_TAB_STYLE = {
@@ -350,7 +355,7 @@ function updateTabs() {
         tab_unlocked[i] = []
 
         if (array) {
-            if (player.radios.notify && unl) {
+            if (unl) {
                 tab_unlocked[i] = v.stab.filter(x => (!x[1] || x[1]()) && getTabNotification(x[0])).map(x => x[0])
             }
 
@@ -369,7 +374,7 @@ function updateTabs() {
         elem = el('tab'+i+'-button')
 
         elem.style.display = el_display(unl)
-        if (unl) elem.className = el_classes({[`${v.id} tab-button`]: true, selected, notify: player.radios.notify && (array ? tab_unlocked[i].length > 0 : getTabNotification(v.stab))})
+        if (unl) elem.className = el_classes({[`${v.id} tab-button`]: true, selected, notify: array ? tab_unlocked[i].length > 0 : getTabNotification(v.stab)})
     }
 
     for (let [i,v] of Object.entries(TAB_IDS)) {

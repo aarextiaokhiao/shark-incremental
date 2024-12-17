@@ -6,7 +6,6 @@ function getPlayerData() {
     let s = {
         fish: E(1),
         total_fish: E(0),
-        shark_charge: 0,
 
         shark_level: E(0),
         shark_rank: E(0),
@@ -21,7 +20,12 @@ function getPlayerData() {
         },
 
         research: {},
-
+		agility: {
+			on: ["00", "10"],
+			ch: 0,
+			mult: 1,
+			overch: 0,
+		},
         explore: {
             unl: 0,
             active: -1,
@@ -136,7 +140,7 @@ function getPlayerData() {
     for (let x in RESEARCH) s.research[x] = E(0);
     for (let x in EXPLORE) {
         s.explore.res[x] = s.explore.depth[x] = s.explore.base[x] = E(0)
-        s.explore.upg[x] = [E(0), E(0)]
+        s.explore.upg[x] = [E(0)]
     }
     for (let x in CORE_REACTOR) {
         s.core.reactor[x] = E(0)
@@ -160,15 +164,10 @@ function getPlayerData() {
 
 function wipe(reload,start) {
 	player = getPlayerData()
+
     if (start) return
-    setupOptions()
-    reloadTemp()
     tab = 0, stab = stab.map(x=>0), tab_name = 'shark'
-    ores_grid = []
-	if (reload) {
-        save()
-        location.reload()
-    }
+    reloadTemp()
 }
 
 function loadPlayer(load) {

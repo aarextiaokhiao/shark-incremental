@@ -218,8 +218,8 @@ const REMNANT_UPGS = [
         effDesc: x=>"+"+format(x,3),
     },{
         unl:()=>hasResearch('h7'), // ee45
-        cost:a=>Decimal.tetrate(10,a.mul(.0025).add(3.290898223231325)),
-        bulk:a=>a.slog(10).sub(3.290898223231325).div(.0025),
+        cost:a=>EINF,
+        bulk:a=>E(0),
         effect(a) {
             let x = a.pow_base(2).mul(a.add(1))
             return x

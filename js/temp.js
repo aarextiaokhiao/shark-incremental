@@ -18,17 +18,19 @@ function reloadTemp() {
         shark_iq: E(0),
         shark_tier_bonus: {},
 
-        research_eff: {},
-
         su_el: {},
         su_locked: {},
         su_automated: [],
 
-        depth_gain: [],
-        explore_mult: [],
-        explore_eff: [],
-        explore_upg_boost: [],
-        explore_mil_reached: [],
+        research_visible: [],
+        research_eff: {},
+		explore: {
+			depth_gain: [],
+			mult: [],
+			eff: [],
+			upg_boost: [],
+			mil_reached: [],
+		},
 
         core_bonus_level: [],
         core_effect: [],
@@ -51,9 +53,6 @@ function reloadTemp() {
         forge_affords: {},
         forge_effect: {},
 
-        shark_op: E(1),
-        shark_op_start: E('ee40'),
-
         particle_accel_eff: [],
 
         scalings: {},
@@ -73,8 +72,8 @@ function reloadTemp() {
     }
 
     for (let x in EXPLORE) {
-        tmp.explore_mil_reached[x] = []
-        tmp.explore_upg_boost[x] = [E(1),E(1)]
+        tmp.explore.mil_reached[x] = []
+        tmp.explore.upg_boost[x] = E(1)
     }
 
     for (let x in SCALINGS) {
@@ -99,8 +98,6 @@ function updateTemp() {
     tmp.ss_difficulty = SOLAR_SYSTEM[player.solar_system.active]?.difficulty ?? 0 
     tmp.cr_active = player.core.radiation.active
 
-    tmp.fish_cap = SHARK.fish_cap
-
     updateResearchTemp()
     updateScalingsTemp()
     updateHadronTemp()
@@ -110,6 +107,7 @@ function updateTemp() {
     updateEvolutionTreeTemp()
     updateCoreTemp()
     updateExplorationTemp()
+    AGILITY.updateTemp()
     updateSharkTemp()
 
     var asu = []

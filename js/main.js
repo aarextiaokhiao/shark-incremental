@@ -28,7 +28,7 @@ const TOP_CURR = [
         unl: ()=>player.core.times > 0 || hasDepthMilestone(0,4),
         curr: "core",
         style: "core",
-        req: ()=>player.prestige.total.gte(CURRENCIES.core.require),
+        req: ()=>player.prestige.shards.gte(CURRENCIES.core.require),
     },
     {
         unl: ()=>player.humanoid.times > 0 || player.feature >= 10,
@@ -71,22 +71,23 @@ const PROGRESS = [
         get amount() { return CURRENCIES.prestige.amount },
         require: 500,
     },{
+        auto: true,
         get amount() { return CURRENCIES.prestige.amount },
-        require: 5e4,
-    }/*,{
+        require: 1e6,
+    },{
         auto: true,
         get amount() { return player.shark_level },
-        require: 110,
+        require: 35,
     },{
         auto: true,
         get amount() { return player.explore.depth[0] },
         require: 10935,
     },{
         cond_text: true,
-        get amount() { return CURRENCIES.prestige.total },
-        require: '1e450',
+        get amount() { return CURRENCIES.prestige.amount },
+        require: 1e22,
         logHeight: 1,
-    },{
+    }/*,{
         auto: true,
         get amount() { return CURRENCIES.core.amount },
         require: 10000,
@@ -166,7 +167,10 @@ const PROGRESS = [
 ]
 
 function increaseFeature(v) {
-    if (player.feature == v-1) player.feature++;
+    if (player.feature != v-1) return
+
+	player.feature++
+	tmp.research_pass = 1
 }
 
 const CONFIRMATIONS = {

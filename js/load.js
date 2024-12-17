@@ -29,6 +29,7 @@ function loadGame(start=true, gotNaN=false) {
             
             autosave = setInterval(save, [1/0,15000,30000,60000,120000][player.radios["autosave"]], true)
             setInterval(loop, 1000/FPS)
+            setInterval(updateVisibleResearch, 1000)
         }, 100);
     }
 }
@@ -50,14 +51,7 @@ function setupOptions() {
     createRadio(...getLangRadio('offline'), {
         start_position: 1,
     })
-    createRadio(...getLangRadio('notify'), {
-        start_position: 1,
-    })
 
-    createRadio(...getLangRadio('max-research-amt'), {
-        start_position: 2,
-        width: 40,
-    })
     createRadio(...getLangRadio('visible-research'), {
         start_position: 0,
     })

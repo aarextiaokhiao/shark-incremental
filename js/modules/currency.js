@@ -8,15 +8,18 @@ const CURRENCIES = {
     
         get gain() {
             let x = getSharkBonus("fish").mul(sharkUpgEffect('s1')).mul(sharkUpgEffect('s3').eff)
-			x = x.mul(sharkUpgEffect('p1')).mul(tmp.explore_eff[0][0])
+
+			// Prestige
+			x = x.mul(sharkUpgEffect('p1')).mul(tmp.explore.eff[0]).mul(player.agility.mult)
 			if (hasResearch("p1")) x = x.mul(researchEffect("p1"))
+			if (hasDepthMilestone(1, 0)) x = x.mul(E(1.02).pow(player.shark_upg.p2))
 
-			/*x = x.mul(tmp.core_bonus)
-            x = x.pow(sharkUpgEffect('s4')).pow(tmp.explore_eff[2]).pow(coreReactorEffect(0)).pow(getSharkRankBonus('fish')).pow(simpleETEffect(12))
-            .pow(remnantUpgEffect(4)).pow(tmp.explore_eff[0][1]).pow(spaceBaseUpgEffect('o2')).pow(spaceBaseUpgEffect('r3')).pow(spaceBaseUpgEffect('t4'))
+			// Core
+			x = x.mul(tmp.core_bonus)
 
-            if (inExploration(0)) x = x.root(2)
-            if (hasDepthMilestone(0,3)) x = x.pow(1.05)
+			/*x = x.pow(sharkUpgEffect('s4')).pow(coreReactorEffect(0)).pow(getSharkRankBonus('fish')).pow(simpleETEffect(12))
+            .pow(remnantUpgEffect(4)).pow(spaceBaseUpgEffect('o2')).pow(spaceBaseUpgEffect('r3')).pow(spaceBaseUpgEffect('t4'))
+
             if (tmp.cr_active) x = x.root(3)
             
             if (hasResearch('c14')) x = x.pow(researchEffect('c14'));
@@ -29,19 +32,6 @@ const CURRENCIES = {
             x = expPow(x,constellationBoostEffect(0,false))
             x = expPow(x,getSharkTierBonus('fish'))
             x = expPow(x,remnantUpgEffect(19))*/
-
-            var s = E('ee40'), pre_s = x
-            s = s.pow(getSharkRankBonus('so'))
-            if (isSSObserved('uranus')) s = EINF;
-
-            tmp.shark_op_start = s
-
-            if (x.gte(s)) {
-                x = x.overflow(s,0.5)
-                tmp.shark_op = pre_s.log10().div(x.log10())
-            } else tmp.shark_op = E(1)
-
-            x = x.min(tmp.fish_cap)
 
             return x
         },
@@ -67,16 +57,13 @@ const CURRENCIES = {
             let x = player.fish.div(1e5)
             if (x.lt(1)) return E(0)
 
-            x = x.sqrt().pow(coreReactorEffect(1)).mul(tmp.explore_eff[1][0])
+            x = x.sqrt().mul(tmp.explore.eff[1])
+			if (inExploration(2)) x = x.sqrt()
 
-            x = x.pow(tmp.explore_eff[3]).pow(simpleETEffect(13)).pow(getSharkRankBonus('prestige')).pow(forgeUpgradeEffect('shard'))
-            .pow(tmp.explore_eff[1][1]).pow(spaceBaseUpgEffect('o3')).pow(spaceBaseUpgEffect('r4'))
+            /*x = x.pow(coreReactorEffect(1)).pow(simpleETEffect(13)).pow(getSharkRankBonus('prestige')).pow(forgeUpgradeEffect('shard')).pow(spaceBaseUpgEffect('o3')).pow(spaceBaseUpgEffect('r4'))
 
             if (hasResearch('dm2')) x = x.pow(remnantUpgEffect(4))
 
-            if (hasDepthMilestone(0,0)) x = x.pow(1.05)
-
-            if (inExploration(1)) x = x.root(2)
             if (tmp.cr_active) x = x.root(3)
 
             x = expPow(x,forgeUpgradeEffect('refined_shard'))
@@ -84,15 +71,15 @@ const CURRENCIES = {
             x = expPow(x,simpleCETEffect(13))
             x = expPow(x,coreReactorEffect(9))
             x = expPow(x,constellationBoostEffect(1,false))
-            x = expPow(x,getSharkTierBonus('prestige'))
+            x = expPow(x,getSharkTierBonus('prestige'))*/
     
             return x.floor()
         },
 
-        get passive() { return hasDepthMilestone(1,3) ? 1 : 0 },
+        get passive() { return hasDepthMilestone(1,3) ? 1e-3 : 0 },
     },
     core: {
-        get require() { return E('1e450') },
+        get require() { return E(1e22) },
 
         get amount() { return player.core.fragments },
         set amount(v) { player.core.fragments = v.max(0) },
@@ -101,25 +88,10 @@ const CURRENCIES = {
         set total(v) { player.core.total = v.max(0) },
 
         get gain() {
-            let x = player.prestige.total.div('1e450')
-
+            let x = player.prestige.shards.div(1e22)
             if (x.lt(1)) return E(0)
-
-            x = x.log10().div(10).add(1)
-
-            if (hasEvolutionGoal(2)) x = expPow(x,1.25)
-
-            x = x.mul(getSharkBonus("core")).mul(getCRBoost(1)).mul(spaceBaseUpgEffect('o4'))
-            
-            x = x.pow(simpleETEffect(14))
-            x = x.pow(tmp.bh_reduction)
-            x = x.pow(simpleCETEffect(14))
-            x = x.pow(coreReactorEffect(10))
-            x = x.pow(constellationBoostEffect(2,false))
-
-            x = expPow(x,getNucleobaseEffect('guanine',2))
     
-            return x.floor()
+            return x.root(5)
         },
 
         get passive() { return hasEvolutionGoal(0) ? 1 : 0 },
@@ -276,14 +248,7 @@ const CURRENCIES = {
         get passive() { return +hasResearch('t3') },
     },
     hadron: {
-        next(o) {
-            let x = o.root(this.exp).div(this.mult).add(1).log10().add(1).log10().div(10).add(1).root(.75).add(this.require_slog).sub(1)
-            x = Decimal.tetrate(10,x)
-            return x
-        },
-
-        require: E('ee9e15'),
-        require_slog: Decimal.slog('ee9e15',10),
+        require: EINF,
         
         get amount() { return player.hadron.amount },
         set amount(v) { player.hadron.amount = v.max(0) },
@@ -303,13 +268,7 @@ const CURRENCIES = {
         get exp() { return 1 },
 
         get gain() {
-            let x = player.fish.max(1).slog(10).sub(this.require_slog)
-
-            if (x.lt(0)) return E(0);
-
-            x = x.add(1).pow(.75).sub(1).mul(10).pow10().sub(1).pow10().sub(1).mul(this.mult).pow(this.exp).add(1)
-
-            return x.floor()
+            return E(0)
         },
 
         get passive() { return +hasResearch('h9') },
@@ -326,10 +285,13 @@ function setupCurrencies() {
             get gain() {
                 if (tmp.ss_difficulty || player.explore.unl <= i) return E(0)
 
-                let x = player.explore.base[i].mul(tmp.explore_upg_boost[i][0]).mul(tmp.explore_mult[i])
+                let x = player.explore.base[i].mul(tmp.explore.mult[i])
+                if (hasDepthMilestone(0,1)) x = x.pow(2)
+				if (hasDepthMilestone(1,1)) x = x.mul(E(1.02).pow(player.shark_upg.p2))
+				if (hasDepthMilestone(1,2)) x = x.mul(sharkUpgEffect("s4", 1))
 
                 if (i < 4 && tmp.cr_active) x = x.root(3)
-        
+
                 return x
             },
         }

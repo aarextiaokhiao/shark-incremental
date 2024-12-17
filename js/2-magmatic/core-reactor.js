@@ -5,18 +5,13 @@ const CORE_REACTOR = [
         get req_text() { return CURRENCIES.core.costName },
         get resource() { return CURRENCIES.core.amount },
 
-        require: l => Decimal.pow(2,l).ceil(),
-        bulk: x => x.log(2),
+        require: l => Decimal.pow(5,l).ceil(),
+        bulk: x => x.log(5),
 
         effect: l=>{
-            let x = player.fish.max(10).log10().log10().div(100).mul(l).mul(coreReactorEffect(4))
-            if (hasResearch('c8')) x = x.mul(2);
-            x = x.add(1)
-            if (hasEvolutionTree(32)) x = x.pow(1.75);
-            if (hasEvolutionTree(4,true)) x = expPow(x,2.5);
-            return x
+            return E(1)
         },
-        effDesc: x => formatPow(x,3),
+        effDesc: x => formatMult(x),
     },{
         symbol: "Ni",
 
@@ -27,14 +22,9 @@ const CORE_REACTOR = [
         bulk: x => x.div('e6000').log(1e100).root(3),
 
         effect: l=>{
-            let x = player.prestige.shards.max(10).log10().log10().div(100).mul(l).mul(coreReactorEffect(5))
-            if (hasResearch('c4')) x = x.mul(2);
-            x = x.add(1)
-            if (hasEvolutionTree(33)) x = x.pow(5.6);
-            if (hasEvolutionTree(5,true)) x = expPow(x,2);
-            return x
+            return E(1)
         },
-        effDesc: x => formatPow(x,3),
+        effDesc: x => formatMult(x),
     },{
         symbol: "O",
 
@@ -45,18 +35,7 @@ const CORE_REACTOR = [
         bulk: x => x.div('e700').log(1e10).root(3),
 
         effect(l) {
-            let x = E(1)
-
-            for (let i = 0; i < 4; i++) {
-                x = x.mul(player.explore.res[i].add(10).log10())
-            }
-
-            x = Decimal.pow(expPow(x,0.5),l.mul(coreReactorEffect(6)).overflow(1e25,0.5))
-
-            if (hasEvolutionTree(34)) x = x.pow(1.06);
-            if (hasEvolutionTree(6,true)) x = expPow(x,1.5);
-
-            return x
+            return E(1)
         },
         effDesc: x => formatMult(x),
     },{
@@ -69,12 +48,9 @@ const CORE_REACTOR = [
         bulk: x => x.div('e60').log(10).root(hasResearch('c8') ? 1.5 : 2.5),
 
         effect: l=>{
-            let x = player.shark_level.max(0).sqrt().div(100).mul(l).mul(coreReactorEffect(7)).add(1)
-            if (hasEvolutionTree(35)) x = x.pow(3);
-            if (hasEvolutionTree(7,true)) x = expPow(x,2.25);
-            return x
+            return E(1)
         },
-        effDesc: x => format(x,3)+"√",
+        effDesc: x => formatMult(x),
     },
     
     {
@@ -97,7 +73,7 @@ const CORE_REACTOR = [
 
         get req_text() { return lang_text("core-1-name").bold() },
         get resource() { return player.core.reactor[1] },
-        
+
         require: l => l.mul(15).add(100).ceil(),
         bulk: x => x.sub(100).div(15),
 
@@ -234,30 +210,9 @@ function getCoreReactorBulk(i,res) {
 
 function getBonusReactor() {
     let x = E(1)
+    for (var i = 0; i < 4; i++) x = x.mul(player.core.reactor[i].add(1))
 
-    if (hasResearch('c9')) {
-        var boost = 0
-
-        if (hasResearch('c5')) boost = getCRBoost(0,0)
-
-        for (let i = 0; i < CORE_REACTOR.length; i++) {
-            var v = player.core.reactor[i].add(1)
-            if (i < 4) v = v.add(boost)
-            x = x.mul(v)
-        }
-
-        x = Decimal.pow10(x.sub(1))
-    } else {
-        for (let i = 0; i < CORE_REACTOR.length; i++) {
-            x = x.mul(player.core.reactor[i].add(1))
-        }
-    
-        if (hasResearch('c5')) x = x.mul(getCRBoost(0,0).div(50).add(1))
-
-        x = Decimal.pow10(x.pow(0.8).sub(1))
-    }
-
-    return x
+    return x.mul(3).sub(2)
 }
 
 function upgradeCoreReactor(i) {

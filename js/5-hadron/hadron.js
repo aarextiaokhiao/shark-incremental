@@ -33,7 +33,7 @@ function buyStarterUpgrade(i) {
 
 function updateStarterUpgradesHTML() {
     el('total-fundamental').textContent = player.hadron.total.format(0)
-    el('fundamental-effect').textContent = tmp.fish_cap.format(0)
+    el('fundamental-effect').textContent = "???"
 
     let len = player.hadron.starter_upgs.length, text = [lang_text('cost'),lang_text('purchased')], cost = 2**len
     for (let i = 0; i < STARTER_UPGRADES_LENGTH; i++) {
@@ -82,9 +82,8 @@ const NUCLEOBASES = {
             exp_bulk: x => x.div(5).max(1).log(2).sumBase(1.01,true),
 
             base: {
-                slog: Decimal.slog('ee1e18',10),
-                cost(x) { return Decimal.tetrate(10,x.mul(.01).add(this.slog)) },
-                bulk(x) { return x.slog(10).sub(this.slog).div(.01) },
+                cost: x => EINF,
+                bulk: x => E(0),
                 currency: "fish",
             },
             tier: {
@@ -107,9 +106,8 @@ const NUCLEOBASES = {
             exp_bulk: x => x.div(5).max(1).log(2).sumBase(1.01,true),
 
             base: {
-                slog: Decimal.slog('ee1e24',10),
-                cost(x) { return Decimal.tetrate(10,x.mul(.01).add(this.slog)) },
-                bulk(x) { return x.slog(10).sub(this.slog).div(.01) },
+                cost: x => EINF,
+                bulk: x => E(0),
                 currency: "prestige",
             },
             tier: {
@@ -132,9 +130,8 @@ const NUCLEOBASES = {
             exp_bulk: x => x.div(25).max(1).log(4).sumBase(1.01,true),
 
             base: {
-                slog: Decimal.slog('ee1e63',10),
-                cost(x) { return Decimal.tetrate(10,x.mul(.01).add(this.slog)) },
-                bulk(x) { return x.slog(10).sub(this.slog).div(.01) },
+                cost: x => EINF,
+                bulk: x => E(0),
                 currency: "core",
             },
             tier: {
