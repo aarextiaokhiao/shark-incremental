@@ -230,7 +230,7 @@ function setupExplorationHTML() {
                 <div>
                     <div style="min-height: 118px; text-align: left;">
                         <h3>${lang_text("explore-"+i+"-name")}</h3><br>
-                        ${curr.costName}: <span id="explore-${i}-res">0</span><br>
+                        <span id="explore-${i}-res">0</span> ${curr.costName}<br>
                         <b>${lang_text("effect")}:</b> <span id="explore-${i}-effect">???</span><br>
                         <b>${lang_text("depth")}:</b> <span id="explore-${i}-depth">0m</span>
                     </div><div class="table-left">
@@ -262,8 +262,8 @@ function updateExplorationHTML() {
             let b = player.explore.base[i]
             if (i == a) {
                 let bb = getBaseExploration(i)
-                el(el_id+'explore').innerHTML = lang_text('explore-inside',b,bb,x.fish_req)
-            } else el(el_id+'explore').innerHTML = lang_text("explore-outside",b)
+                el(el_id+'explore').innerHTML = lang_text('explore-inside',compareStyle(format(b)+"/s",b,bb),x.fish_req)
+            } else el(el_id+'explore').innerHTML = lang_text("explore-outside")
 
             let res = player.explore.res[i], curr = CURRENCIES[x.resource], text_curr = curr.costName
 

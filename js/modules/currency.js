@@ -79,6 +79,9 @@ const CURRENCIES = {
             x = expPow(x,coreReactorEffect(9))
             x = expPow(x,constellationBoostEffect(1,false))
             x = expPow(x,getSharkTierBonus('prestige'))
+            x = expPow(x,galacticExplorationEffect(1))
+
+            if (inGalacticExploration(1)) x = Decimal.tetrate(10,x.max(1).slog(10).div(2)).pow(simpleResearchEffect('ge3'));
     
             return x.floor()
         },
@@ -112,6 +115,9 @@ const CURRENCIES = {
             x = x.pow(constellationBoostEffect(2,false))
 
             x = expPow(x,getNucleobaseEffect('guanine',2))
+            x = expPow(x,galacticExplorationEffect(0))
+
+            if (inGalacticExploration(0)) x = x.overflow(10,0.5,2);
     
             return x.floor()
         },
@@ -133,7 +139,8 @@ const CURRENCIES = {
             if (isSSObserved('venus')) x += 1.25;
             if (hasEvolutionTree(15,true)) x += chargedETreeEffect(15,0);
             x = Decimal.add(x,remnantUpgEffect(15,0))
-            x = x.mul(constellationBoostEffect(3,false))
+            x = x.mul(constellationBoostEffect(3,false)).mul(galacticExplorationEffect(2))
+            if (inGalacticExploration(2)) x = x.root(10);
             return x
         },
 
@@ -173,6 +180,12 @@ const CURRENCIES = {
 
             x = x.pow(forgeUpgradeEffect('matter')).pow(getNucleobaseEffect('cytosine',2))
 
+            x = expPow(x,constellationBoostEffect(8,false))
+            x = expPow(x,getNucleobaseEffect('guanine',5))
+            x = expPow(x,galacticExplorationEffect(3))
+
+            if (inGalacticExploration(3)) x = x.overflow(10,0.5,2);
+
             return x
         },
     },
@@ -195,6 +208,11 @@ const CURRENCIES = {
             x = x.mul(getCRBoost(11))
 
             x = x.pow(getNucleobaseEffect('cytosine',2))
+
+            x = expPow(x,constellationBoostEffect(8,false))
+            x = expPow(x,getNucleobaseEffect('guanine',5))
+
+            if (inGalacticExploration(3)) x = x.overflow(10,0.5,2);
     
             return x.floor()
         },
@@ -290,11 +308,17 @@ const CURRENCIES = {
         get mult() {
             let x = getSharkTierBonus('hadron')
 
-            x = x.mul(getNucleobaseEffect('cytosine',1)).mul(getNucleobaseEffect('guanine',1)).mul(constellationBoostEffect(5,false)).mul(remnantUpgEffect(18))
+            x = x.mul(getNucleobaseEffect('cytosine',1)[0]).mul(getNucleobaseEffect('guanine',1)[0]).mul(constellationBoostEffect(5,false)).mul(remnantUpgEffect(18))
 
             return x
         },
-        get exp() { return 1 },
+        get exp() {
+            let x = getNucleobaseEffect('adenine',4)
+
+            if (hasResearch('ge11')) x = x.mul(getNucleobaseEffect('cytosine',1)[1]).mul(getNucleobaseEffect('guanine',1)[1]);
+
+            return x
+        },
 
         get gain() {
             let x = player.fish.max(1).slog(10).sub(this.require_slog)
@@ -373,6 +397,31 @@ function setupCurrencies() {
                 let bht = player.singularity.bh_tier
                 if (bht.lt(b.req)) return E(0);
                 let x = bht.sub(b.req).pow_base(10).mul(tmp.constellation_mult)
+                if (hasResearch('h12')) x = x.pow(bht.sub(b.req).add(1));
+                if (i < 7) x = x.pow(constellationBoostEffect(7,false));
+                return x
+            },
+        }
+    }
+
+    lang = lang_text("gal-explore")
+
+    for (let i = 0; i < GALACTIC_EXPLORE.length; i++) {
+        const GE = GALACTIC_EXPLORE[i]
+        CURRENCIES['gal-explore-'+i] = {
+            get amount() { return player.hadron.gal_explore.res[i] },
+            set amount(v) { player.hadron.gal_explore.res[i] = v.max(0) },
+
+            name: lang[i][1],
+            costName: toTextStyle(lang[i][1],'gal-explore-'+i),
+        
+            get gain() {
+                if (player.hadron.gal_explore.unl <= i) return E(0)
+
+                let x = player.hadron.gal_explore.score[i].pow(hasResearch('ge7')?2:1)
+                
+                x = x.mul(tmp.gal_explore_mult[i]).mul(simpleResearchEffect('ge1'))
+        
                 return x
             },
         }
